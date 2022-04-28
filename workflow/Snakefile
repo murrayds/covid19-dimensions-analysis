@@ -35,15 +35,14 @@ FUNDING_ORGS = j(BQ_HOME, "funding_orgs", "funding_orgs_{topic}.tsv")
 PUBS_OVER_TIME = j(BQ_HOME, "temporal", "pubs_over_time_{topic}.tsv")
 
 TOPIC_FILTERS = ["covid-all", "covid-vaccine"]
-METRICS = ["citations", "pubcount", "altmetrics"]
-METRICS_PUBS = ["citations", "altmetrics"]
+METRICS = ["pubcount", "citations", "altmetrics"]
 
 
 rule all:
     input:
         expand(LEADING_ORGS, topic = TOPIC_FILTERS),
         expand(LEADING_AUTHORS, topic = TOPIC_FILTERS, metric = METRICS),
-        expand(LEADING_PUBS, topic = TOPIC_FILTERS, metric = METRICS_PUBS),
+        expand(LEADING_PUBS, topic = TOPIC_FILTERS, metric = METRICS[1:]),
         PUB_CONCEPTS,
         expand(FUNDING_ORGS, topic = TOPIC_FILTERS),
         expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS)
