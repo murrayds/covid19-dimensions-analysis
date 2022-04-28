@@ -32,6 +32,8 @@ PUB_CONCEPTS = j(BQ_HOME, "pub_concepts", "pub_concepts.tsv")
 
 FUNDING_ORGS = j(BQ_HOME, "funding_orgs", "funding_orgs_{topic}.tsv")
 
+PUBS_OVER_TIME = j(BQ_HOME, "temporal", "pubs_over_time_{topic}.tsv")
+
 TOPIC_FILTERS = ["covid-all", "covid-vaccine"]
 METRICS = ["citations", "pubcount", "altmetrics"]
 METRICS_PUBS = ["citations", "altmetrics"]
@@ -42,8 +44,9 @@ rule all:
         expand(LEADING_ORGS, topic = TOPIC_FILTERS),
         expand(LEADING_AUTHORS, topic = TOPIC_FILTERS, metric = METRICS),
         expand(LEADING_PUBS, topic = TOPIC_FILTERS, metric = METRICS_PUBS),
-        expand(PUB_CONCEPTS),
-        expand(FUNDING_ORGS, topic = TOPIC_FILTERS)
+        PUB_CONCEPTS,
+        expand(FUNDING_ORGS, topic = TOPIC_FILTERS),
+        expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS)
 
 rule fetch_leading_orgs:
     output: LEADING_ORGS
@@ -71,3 +74,8 @@ rule fetch_funding_orgs:
     output: FUNDING_ORGS
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_funding_orgs.py"
+
+rule fetch_pubs_over_time:
+    output: PUBS_OVER_TIME
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_pubs_over_time.py"
