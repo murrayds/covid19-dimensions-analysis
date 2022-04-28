@@ -60,4 +60,4 @@ df = pandas_gbq.read_gbq(bqsql.format(condition=condition),
                          project_id=project_id)
 
 # Save the dataframe returned by the query to the output file
-df.to_csv(snakemake.output[0], index = False)
+df.to_csv(snakemake.output[0], index = False, sep = "\t")

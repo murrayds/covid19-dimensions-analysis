@@ -24,15 +24,25 @@ BQ_HOME = j(DATA_HOME, "bq-data")
 ###############################################################################
 # Folders
 ###############################################################################
-LEADING_ORGS = j(BQ_HOME, "leading_orgs_{topic}.csv")
+LEADING_ORGS = j(BQ_HOME, "leading_orgs", "leading_orgs_{topic}.tsv")
+LEADING_AUTHORS = j(BQ_HOME, "leading_authors", "leading_authors_{topic}_{metric}.tsv")
 
 TOPIC_FILTERS = ["covid-all", "covid-vaccine"]
+METRICS = ["citations", "pubcount", "altmetrics"]
+
 
 rule all:
     input:
-        expand(LEADING_ORGS, topic = TOPIC_FILTERS)
+        expand(LEADING_ORGS, topic = TOPIC_FILTERS),
+        expand(LEADING_AUTHORS, topic = TOPIC_FILTERS, metric = METRICS)
 
 rule fetch_leading_orgs:
     output: LEADING_ORGS
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_leading_orgs.py"
+
+rule fetch_leading_authors:
+    params: lambda wc: wc.get("metric")
+    output: LEADING_AUTHORS
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_leading_authors.py"
