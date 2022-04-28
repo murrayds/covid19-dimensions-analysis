@@ -23,7 +23,7 @@ logger.addHandler(logging.StreamHandler())
 # Project ID
 project_id = "ccnr-success"
 
-# BigQuery SQL for fetching leading organizations
+# BigQuery SQL for fetching leading authors
 bqsql = """
 WITH top_researchers AS (
   SELECT * FROM (
@@ -78,6 +78,7 @@ researcher_fields AS (
   QUALIFY ROW_NUMBER() OVER (PARTITION BY top.researcher_id ORDER BY cat_count DESC) = 1
 )
 
+-- Now, select from out temporary tables defined above
 SELECT
   top.*,
   fields.* except(cat_count, researcher_id),
