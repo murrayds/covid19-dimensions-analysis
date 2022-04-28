@@ -1,0 +1,10 @@
+name: bigquery
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pandas=1.4
+  - pandas-gbq=0.17
+  - python=3.10
+  - tqdm=4.64
+prefix: /Users/d.murray/opt/miniconda3/envs/bigquery
