@@ -25,6 +25,11 @@ AND ('COVID-19' in UNNEST(pubs.concepts.concept) or "new coronavirus" in UNNEST(
       OR REGEXP_CONTAINS(title.preferred, r"covid-19|new coronavirus|novel coronavirus|sars-cov-2|2019-ncov|hcov|severe acute respiratory syndrome coronavirus|coronavirus disease 2019"))
 """
 
+covid_filter_concepts_bqsql = """
+AND (LOWER(c.concept) IN UNNEST(["covid-19", "new coronavirus", "novel coronavirus", "sars-cov-2", "2019-ncov", "hcov", "hcov-2019", "severe acute respiratory syndrome coronavirus 2", "coronavirus disease 2019"])
+    OR REGEXP_CONTAINS(title.preferred, r"covid-19|new coronavirus|novel coronavirus|sars-cov-2|2019-ncov|hcov|severe acute respiratory syndrome coronavirus|coronavirus disease 2019"))
+"""
+
 vaccine_filter_bqsql = """
 AND ('vaccine' in UNNEST(concepts.concept) or 'vaccination' in UNNEST(concepts.concept) or 'mRNA' in UNNEST(concepts.concept)
          OR REGEXP_CONTAINS(title.preferred, r"vaccine|vaccination|mrna"))
