@@ -51,7 +51,7 @@ FROM
   GROUP BY orgs.id
 ) as counts
 LEFT JOIN `covid-19-dimensions-ai.data.grid` AS orgs ON counts.id = orgs.id
-WHERE pubcount > 20
+WHERE pubcount > 100
 ORDER BY pubcount DESC
 """
 
