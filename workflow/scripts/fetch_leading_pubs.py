@@ -6,6 +6,9 @@
 # Queries the covid-19-dimensions-ai BigQuery database to return the
 # the top COVID-19 publications
 #
+# Included are conditions filtering to COVID, or COVID-Vacine research, as
+# well as ranking authors by publications, citations, or altmetrics
+# 
 
 import pandas_gbq
 import tqdm
@@ -20,7 +23,7 @@ logger.addHandler(logging.StreamHandler())
 # Project ID
 project_id = "ccnr-success"
 
-# BigQuery SQL for fetching leading organizations
+# BigQuery SQL for fetching leading publications
 bqsql = """
 select
     doi,

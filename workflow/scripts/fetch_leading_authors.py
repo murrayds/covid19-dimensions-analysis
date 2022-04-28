@@ -4,7 +4,10 @@
 # author: dakota.s.murray@gmail.com
 #
 # Queries the covid-19-dimensions-ai BigQuery database to return the
-# the leading organizations pursuing COVID-19 research
+# the leading authors pursuing COVID-19 research
+#
+# Included are conditions filtering to COVID, or COVID-Vacine research, as
+# well as ranking authors by publications, citations, or altmetrics
 #
 
 import pandas_gbq
