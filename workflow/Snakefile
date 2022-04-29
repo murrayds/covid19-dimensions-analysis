@@ -36,6 +36,8 @@ ORG_TOP_PUBS = j(BQ_HOME, 'leading_orgs', "org_top_pubs.tsv")
 
 PUB_CONCEPTS = j(BQ_HOME, "pub_concepts", "pub_concepts.tsv")
 
+CONCEPT_FREQ = j(BQ_HOME, "concept_frequencies.tsv")
+
 FUNDING_ORGS = j(BQ_HOME, "funding_orgs", "funding_orgs_{topic}.tsv")
 
 PUBS_OVER_TIME = j(BQ_HOME, "temporal", "pubs_over_time_{topic}.tsv")
@@ -56,6 +58,7 @@ rule all:
         ORG_TOP_FUNDERS,
         ORG_TOP_PUBS,
         PUB_CONCEPTS,
+        CONCEPT_FREQ,
         expand(FUNDING_ORGS, topic = TOPIC_FILTERS),
         expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS)
 
@@ -95,6 +98,11 @@ rule fetch_pub_concepts:
     output: PUB_CONCEPTS
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_pub_concepts.py"
+
+rule fetch_concept_frequencies:
+    output: CONCEPT_FREQ
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_concept_frequency.py"
 
 rule fetch_funding_orgs:
     output: FUNDING_ORGS
