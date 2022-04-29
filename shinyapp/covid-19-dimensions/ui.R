@@ -54,6 +54,8 @@ shinyUI(
               "Leading authors",
               mainPanel(
                 h4("Leading authors pursuing COVID-19 and vaccine research"),
+                p("There are many ", strong(em("dimensions")), " that can be used to judge the most excellent researchers pusruing COVID-19 research. Their number of publications speaks to a researcher's productivity, whereas their total citations instead illustrates their impact. Some researchers may instead generate social impact measured through ", strong(em("altmetrics")), "."),
+                p("These tables show the top 50 researchers pursuing COVID-19 and vaccine research around the world, measured by their publications, citations, and altmetrics score. Use the controls here to select the ranking metric to use and whether to highlight all COVID-19 researchers, or only those pursuing research into vaccines. Selecting a researcher will show their most cited publications, as well as a visualization of their most frequently-used keywords"),
                 radioButtons("author.metric", "Ranking metric:",
                              c("Publications" = "pubcount",
                                "Citations" = "citations",
@@ -72,10 +74,9 @@ shinyUI(
                 column(6,
                        verticalLayout(
                          h4("Top Publications"),
-                         fluidRow(column(align = "left", DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="#0dc5c1"), width = 12)) ,
-                         
-                         h4("Publication keywords"),
-                         fluidRow(column(align = "left", plotOutput("author.wordcloud") %>% withSpinner(color="#0dc5c1"), width = 12)),
+                         fluidRow(column(align = "left", DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="darkgrey"), width = 12)) ,
+                         h4("Top Keywords"),
+                         fluidRow(column(align = "left", plotOutput("author.wordcloud") %>% withSpinner(color="darkgrey"), width = 12)),
                        )
                 ),
                 width = 12
