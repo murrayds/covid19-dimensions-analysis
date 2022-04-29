@@ -1,11 +1,16 @@
 #
 # Functions for working with the organization-table
 #
+# author: dakota.s.murray@gmail.com
+#
+
+#
+# DATA GETTERS
+#
 org.covid.all <- reactive({
   read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/leading_orgs_covid-all.tsv", 
              delim = "\t")
 })
-
 
 org.covid.vaccine <- reactive({
   read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/leading_orgs_covid-vaccine.tsv", 
@@ -17,6 +22,23 @@ org.top.authors <- reactive({
              delim = "\t")
 })
 
+org.top.funders <- reactive({
+  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/org_top_funders.tsv",
+             delim = "\t")
+})
+
+org.top.pubs <- reactive({
+  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/org_top_pubs.tsv",
+             delim = "\t")
+})
+
+
+#
+# Table filtering functions
+#
+# The data contains info for all publications, we we need to be able to 
+# filter it down
+#
 selected.org.top.authors <- function(selId) {
   org.top.authors() %>% 
     filter(orgid == selId) %>%
@@ -25,12 +47,6 @@ selected.org.top.authors <- function(selId) {
     rename(`# Papers` = pubcount,
            `# Citations` = citations)
 }
-
-
-org.top.funders <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/org_top_funders.tsv",
-             delim = "\t")
-})
 
 selected.org.top.funders <- function(selId) {
   org.top.funders() %>% 
@@ -49,11 +65,6 @@ selected.org.top.funders <- function(selId) {
            `%` = prop )  
 }
 
-org.top.pubs <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/org_top_pubs.tsv",
-             delim = "\t")
-})
-
 selected.org.top.pubs <- function(selId) {
   org.top.pubs() %>% 
     filter(orgid == selId) %>%
@@ -64,7 +75,11 @@ selected.org.top.pubs <- function(selId) {
 }
 
 
-# Code for generating main orgainzation tables
+#
+# Table generation functions
+#
+
+# Generate the main table
 generate_org_table <- function(df) {
   DT::renderDataTable({
     df %>%

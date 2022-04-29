@@ -9,6 +9,7 @@
 
 library(shiny)
 library(DT)
+library(shinycssloaders)
 
 # Define UI for application that draws a histogram
 shinyUI(
@@ -53,6 +54,31 @@ shinyUI(
               "Leading authors",
               mainPanel(
                 h4("Leading authors pursuing COVID-19 and vaccine research"),
+                radioButtons("author.metric", "Ranking metric:",
+                             c("Publications" = "pubcount",
+                               "Citations" = "citations",
+                               "Altmetrics" = "altmetrics"
+                             ),
+                             inline = TRUE),
+                column(6, align = "left",
+                       fluidRow(column(tabsetPanel(
+                         id = "author.tabSwitch",
+                         tabPanel("All COVID-19 Research", DT::dataTableOutput("author.covid.all.table")),
+                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("author.covid.vaccine.table")),
+                        ), 
+                        width = 12),
+                       )
+                ), # End column
+                column(6,
+                       verticalLayout(
+                         h4("Top Publications"),
+                         fluidRow(column(align = "left", DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="#0dc5c1"), width = 12)) ,
+                         
+                         h4("Publication keywords"),
+                         fluidRow(column(align = "left", plotOutput("author.wordcloud") %>% withSpinner(color="#0dc5c1"), width = 12)),
+                       )
+                ),
+                width = 12
               ) # End mainPanel
             ), # End tabPanel
   ) # End navbarPage
