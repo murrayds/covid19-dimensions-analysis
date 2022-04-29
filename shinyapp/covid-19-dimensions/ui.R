@@ -13,6 +13,9 @@ library(DT)
 # Define UI for application that draws a histogram
 shinyUI(
   navbarPage("COVID-19 Research", 
+             #
+             # ORGANIZATION TABLE PANEL
+             #
              tabPanel(
                "Leading organizations",
                mainPanel(
@@ -23,9 +26,9 @@ shinyUI(
                  p("Selecting an organization will display additional information about it, including the leading authors pursuing COVID-19 research, the leading funders and funding amounts supporting COVID-19 research at the organization, and their most cited COVID-19 publications."),
                  column(6, align = "left",
                         fluidRow(column(tabsetPanel(
-                          id = "tabSwitch",
-                          tabPanel("All COVID-19 Research", DT::dataTableOutput("covid.all.table")),
-                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("covid.vaccine.table")),
+                          id = "org.tabSwitch",
+                          tabPanel("All COVID-19 Research", DT::dataTableOutput("org.covid.all.table")),
+                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("org.covid.vaccine.table")),
                         ), 
                         width = 12),
                         )
@@ -43,6 +46,14 @@ shinyUI(
                  width = 12
               ) # End mainPanel
             ), # End tabPanel
-            tabPanel("Leading authors")
+            #
+            # AUTHOR TABLE PANEL
+            #
+            tabPanel(
+              "Leading authors",
+              mainPanel(
+                h4("Leading authors pursuing COVID-19 and vaccine research"),
+              ) # End mainPanel
+            ), # End tabPanel
   ) # End navbarPage
 )

@@ -1,13 +1,13 @@
 #
 # Functions for working with the organization-table
 #
-covid.all <- reactive({
+org.covid.all <- reactive({
   read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/leading_orgs_covid-all.tsv", 
              delim = "\t")
 })
 
 
-covid.vaccine <- reactive({
+org.covid.vaccine <- reactive({
   read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/leading_orgs_covid-vaccine.tsv", 
              delim = "\t")
 })
