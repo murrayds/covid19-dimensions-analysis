@@ -92,7 +92,7 @@ generate_org_table <- function(df) {
   },
   options = list(
     paging = TRUE,    ## paginate the output
-    pageLength = 10,  ## number of rows to output for each page
+    pageLength = 15,  ## number of rows to output for each page
     scrollX = TRUE,   ## enable scrolling on X axis
     scrollY = TRUE,   ## enable scrolling on Y axis
     autoWidth = TRUE, ## use smart column width handling
@@ -101,6 +101,7 @@ generate_org_table <- function(df) {
     buttons = c('csv', 'excel')
   ),
   selection = list(mode = 'single', selected = c(1)),
+  class = "small",
   extensions = 'Buttons')
 }
 
@@ -119,7 +120,7 @@ generate_sub_table <- function(df) {
       ordering = FALSE,
       bSort = FALSE
     ),
-    class = "medium compact",
+    class = "small compact",
     rownames = FALSE,
     selection = "none"
   )

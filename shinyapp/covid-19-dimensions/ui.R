@@ -25,7 +25,7 @@ shinyUI(
                  p("By default, organizations are ranked by their total number of COVID-19 papers, but may also be sorted by the number and percentage of their papers that are in the top 10% of research measured by citations."),
                  p("Tabs allow you to also sort organizations by their contribution to", strong("All COVID-19 Research"), " (default), or specifically by", strong("COVID-19 Vaccine Research"), "."),
                  p("Selecting an organization will display additional information about it, including the leading authors pursuing COVID-19 research, the leading funders and funding amounts supporting COVID-19 research at the organization, and their most cited COVID-19 publications."),
-                 column(6, align = "left",
+                 column(7, align = "left",
                         fluidRow(column(tabsetPanel(
                           id = "org.tabSwitch",
                           tabPanel("All COVID-19 Research", DT::dataTableOutput("org.covid.all.table")),
@@ -34,7 +34,7 @@ shinyUI(
                         width = 12),
                         )
                  ),
-                 column(6,
+                 column(5,
                         verticalLayout(
                           h4("Top authors"),
                           fluidRow(column(align = "left", DT::dataTableOutput("org.top.authors"), width = 12)),
@@ -62,7 +62,7 @@ shinyUI(
                                "Altmetrics" = "altmetrics"
                              ),
                              inline = TRUE),
-                column(6, align = "left",
+                column(7, align = "left",
                        fluidRow(column(tabsetPanel(
                          id = "author.tabSwitch",
                          tabPanel("All COVID-19 Research", DT::dataTableOutput("author.covid.all.table")),
@@ -71,7 +71,7 @@ shinyUI(
                         width = 12),
                        )
                 ), # End column
-                column(6,
+                column(5,
                        verticalLayout(
                          h4("Top Publications"),
                          fluidRow(column(align = "left", DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="darkgrey"), width = 12)) ,
