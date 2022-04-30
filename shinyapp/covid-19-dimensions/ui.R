@@ -114,6 +114,8 @@ shinyUI(
               "Leading funders",
               mainPanel(
                 h4("Leading funding organizations supporting COVID-19 research"),
+                p("Research into COVID-19 and vaccines has received generous support thanks to the efforts of national and international funding organizations. Using data from ", strong(em("Dimensions")), " it is possible to identify the top funders and uncover their spending portfolios."),
+                p("This table shows the top funders, their main country of operation, and ther total spending. Selecting a funder from this table will reveal their top recipents, as well as display a treemap illustrating how their spending is distributed across sectors and countires. Multi-instition grants are divided equally between the organizations."),
                 column(7, align = "left",
                        fluidRow(column(tabsetPanel(
                          id = "funder.tabSwitch",
