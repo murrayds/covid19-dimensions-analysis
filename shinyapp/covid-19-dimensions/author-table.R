@@ -79,10 +79,10 @@ get_concept_wordcloud <- function(table) {
       n = n()
     ) %>%
     arrange(desc(n)) %>%
-    top_n(30, n) %>%
+    top_n(20, n) %>%
     mutate(angle = 0) %>%
     ggplot(aes(label = concepts, size = n, color = n)) +
-    geom_text_wordcloud_area(eccentricity = 1, shape = "diamond") +
+    geom_text_wordcloud_area(shape = "circle") +
     scale_size_area(max_size = 8) +
     scale_color_gradient(low = "black", high = "darkblue") +
     theme_minimal() +
