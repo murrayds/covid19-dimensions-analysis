@@ -89,6 +89,7 @@ shinyUI(
               "Leading publications",
               mainPanel(
                 h4("Leading publications relevant to COVID-19 research"),
+                p("The COVID-19 pandemic has brought with it a deluge of publications. Some of these publications have accumulated tremendous amounts of attention within science, social media, and policy. Here it is possible to identify the top COVID-19 and vaccine-related publications by their scientific (number of citations) and social impact (altmetrics score)."),
                 radioButtons("pub.metric", "Ranking metric:",
                              c("Citations" = "citations",
                                "Altmetrics" = "altmetrics"
@@ -104,7 +105,6 @@ shinyUI(
                        )
                 ), # End column
                 width = 12
-                
               ) # End mainPanel
             ), # End tabPanel
             #
@@ -114,6 +114,27 @@ shinyUI(
               "Leading funders",
               mainPanel(
                 h4("Leading funding organizations supporting COVID-19 research"),
+                column(7, align = "left",
+                       fluidRow(column(tabsetPanel(
+                         id = "funder.tabSwitch",
+                         tabPanel("All COVID-19 Research", DT::dataTableOutput("funder.covid.all.table")),
+                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("funder.covid.vaccine.table")),
+                       ), 
+                       width = 12),
+                       )
+                ), # End column
+                column(5,
+                       verticalLayout(
+                         h4("Top recipients"),
+                         fluidRow(column(align = "left", DT::dataTableOutput("funder.recipients") %>% withSpinner(color="darkgrey"), width = 12)) ,
+                         fluidRow(column(align = "left", 
+                                         h4("Recipient sectors"), 
+                                         plotOutput("funder.recipients.sectors") %>% withSpinner(color="darkgrey"), width = 6),
+                                  column(align = "left", 
+                                         h4("Recipient countries"), 
+                                         plotOutput("funder.recipients.countries") %>% withSpinner(color="darkgrey"), width = 6)),
+                       )
+                ),
                 width = 12
               ) # End mainPanel
             ), # End tabPanel

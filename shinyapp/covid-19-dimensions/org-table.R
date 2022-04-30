@@ -104,24 +104,3 @@ generate_org_table <- function(df) {
   class = "small",
   extensions = 'Buttons')
 }
-
-# Generates a sub-table
-generate_sub_table <- function(df) {
-  DT::renderDataTable(
-    df,
-    options = list(
-      paging = FALSE,    ## paginate the output
-      pageLength = 5,  ## number of rows to output for each page
-      scrollX = FALSE,   ## enable scrolling on X axis
-      scrollY = FALSE,   ## enable scrolling on Y axis
-      autoWidth = TRUE, ## use smart column width handling
-      server = FALSE, ## use client-side processing
-      dom = "t",
-      ordering = FALSE,
-      bSort = FALSE
-    ),
-    class = "small compact",
-    rownames = FALSE,
-    selection = "none"
-  )
-}

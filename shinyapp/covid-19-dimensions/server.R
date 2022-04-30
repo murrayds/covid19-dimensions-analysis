@@ -12,13 +12,15 @@ library(tidyverse)
 library(ggrepel)
 library(DT)
 library(ggwordcloud)
+library(treemapify)
 
 
 source("org-table.R")
 source("author-table.R")
 source("pub-table.R")
+source("funder-table.R")
 
-generate_main_table <- function(table, selection = "single", scrollable = TRUE) {
+generate_main_table <- function(table, selection = "single", scrollable = TRUE, columnDefs = list()) {
   DT::renderDataTable(table,
                       options = list(
                         paging = TRUE,    ## paginate the output
@@ -29,11 +31,33 @@ generate_main_table <- function(table, selection = "single", scrollable = TRUE) 
                         server = FALSE,   ## use client-side processing
                         dom = 'Bfrtip',
                         buttons = c('csv', 'excel'),
+                        columnDefs = columnDefs
                       ),
-                      selection = list(mode = selection, selected = c(1)),
+                      selection = list(mode = selection, selected = 1),
                       class = "small nowrap",
                       extensions = 'Buttons',
                       escape = FALSE)
+}
+
+generate_sub_table <- function(df, columnDefs = list()) {
+  DT::renderDataTable(
+    df,
+    options = list(
+      paging = FALSE,    ## paginate the output
+      pageLength = 5,  ## number of rows to output for each page
+      scrollX = FALSE,   ## enable scrolling on X axis
+      scrollY = FALSE,   ## enable scrolling on Y axis
+      autoWidth = TRUE, ## use smart column width handling
+      server = FALSE, ## use client-side processing
+      dom = "t",
+      ordering = FALSE,
+      bSort = FALSE,
+      columnDefs = columnDefs
+    ),
+    class = "small compact",
+    rownames = FALSE,
+    selection = "none"
+  )
 }
 
 # Define server logic required to draw a histogram
@@ -47,6 +71,10 @@ shinyServer(function(input, output) {
   
   author.table.selection.listener <- reactive({
     list(input$author.covid.all.table_rows_selected, input$author.covid.vaccine.table_rows_selected, input$author.tabSwitch)
+  })
+  
+  funder.table.selection.listener <- reactive({
+    list(input$funder.covid.all.table_rows_selected, input$funder.covid.vaccine.table_rows_selected, input$funder.tabSwitch)
   })
   
   
@@ -64,7 +92,7 @@ shinyServer(function(input, output) {
     selId <- NA
     if (input$org.tabSwitch == "All COVID-19 Research") {
       req(input$org.covid.all.table_rows_selected)
-      selId <- covid.all()[input$org.covid.all.table_rows_selected,]$id
+      selId <- org.covid.all()[input$org.covid.all.table_rows_selected,]$id
       print(paste("Your selected row:", selId))
     } else {
       req(input$org.covid.vaccine.table_rows_selected)
@@ -95,7 +123,7 @@ shinyServer(function(input, output) {
   
   
   # 
-  # Org-Table Event Observers
+  # Author-Table Event Observers
   #
   observeEvent(author.table.selection.listener(), {
     selId <- NA
@@ -121,8 +149,6 @@ shinyServer(function(input, output) {
   })
   
   
-  
-  
   #
   # Author-Table Outputs
   #
@@ -131,5 +157,48 @@ shinyServer(function(input, output) {
     output$pub.covid.vaccine.table = generate_main_table(generate_pub_table(get_pub_table("vaccine", input$pub.metric)), "none", FALSE)
   })
   
+  
+  #
+  # Funder-Table Outputs
+  #
+  output$funder.covid.all.table = generate_main_table(generate_funder_table(get_funder_table_agg("all")), 
+                                                      selection = "single", 
+                                                      scrollable = FALSE, 
+                                                      columnDefs = list(list(targets=3:4, className="dt-right")))
+  
+  output$funder.covid.vaccine.table = generate_main_table(generate_funder_table(get_funder_table_agg("vaccine")), 
+                                                          selection = "single", 
+                                                          scrollable = FALSE, 
+                                                          columnDefs = list(list(targets=3:4, className="dt-right")))
+  
+  
+  # 
+  # Funder-Table Event Observers
+  #
+  observeEvent(funder.table.selection.listener(), {
+    selId <- NA
+    topic <- NULL
+    if (input$funder.tabSwitch == "All COVID-19 Research") {
+      req(input$funder.covid.all.table_rows_selected)
+      topic <- "all"
+      selId <- get_funder_table_agg("all")[input$funder.covid.all.table_rows_selected,]$funder_org
+      print(paste("Your selected row:", selId))
+    } else {
+      req(input$funder.covid.vaccine.table_rows_selected)
+      topic <- "vaccine"
+      selId <- get_funder_table_agg("vaccine")[input$funder.covid.vaccine.table_rows_selected,]$funder_org
+      print(paste("Your selected row:", selId))
+    }
+    
+    # Sub-table showing the most cited publications of selected author
+    output$funder.top.grants = generate_sub_table(genrate_funder_top_grants_table(get_funder_table(topic), selId), columnDefs=list(list(targets=1, className="dt-right")))
+    
+    
+    output$funder.recipients = generate_sub_table(genrate_funder_recipient_table(get_recipient_table(topic), selId), columnDefs=list(list(targets=2, className="dt-right")))
+    
+    output$funder.recipients.sectors = renderPlot({generate_sector_treemap(selId, topic)})
+    output$funder.recipients.countries = renderPlot({generate_country_treemap(selId, topic)})
+    
+  })
 
 })
