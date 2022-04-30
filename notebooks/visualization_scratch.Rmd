@@ -1,0 +1,136 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Import necessary packages
+```{r}
+library(tidyverse)
+library(ggbump)
+```
+
+
+First, lets try comparing the organization contribution to All-covid and vaccine-only research
+```{r, fig.width = 4, fig.height = 4}
+orgs_all <- read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/leading_orgs_covid-all.tsv", delim = "\t")
+orgs_vax <- read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_orgs/leading_orgs_covid-vaccine.tsv", delim = "\t")
+
+df <- data.table::rbindlist(
+  list(orgs_all %>% mutate(type = "all"),
+       orgs_vax %>% mutate(type = "vax")
+  )
+) %>%
+  group_by(type) %>%
+  arrange(desc(top_10_percent)) %>%
+  mutate(rank = row_number())
+
+top <- (df %>% filter(rank <= 16))$id
+
+
+plotdata <- df %>%
+  filter(id %in% top) %>%
+  mutate(id = factor(id)) %>%
+  group_by(type) %>%
+  arrange(rank) %>%
+  mutate(new_rank = row_number()) %>%
+  mutate(
+    #name.short = gsub("University", "Uni.", name),
+    name.short = gsub("National", "Natl.", name),
+    name.short = gsub("Institutes", "Inst.", name.short),
+    name.short = gsub("Science", "Sci", name.short),
+    name.short = gsub("General", "Gen", name.short),
+    name.short = gsub("Hospital", "Hosp", name.short),
+    name.short = gsub("Technology", "Tech.", name.short),
+    name.short = gsub("Medicine", "Med.", name.short),
+    name.short = gsub("Diseases", "Dis.", name.short),
+    name.formatted = ifelse(type == "all", 
+                            paste0(name.short, " (", rank, ")"),
+                            paste0("(", rank, ") ", name.short)),
+  ) %>%
+  mutate(
+    country = factor(country, levels = c("United States", "United Kingdom", "Canada", "Italy", "Israel", "China"))
+  )
+  
+
+plotdata %>%
+  ggplot(aes(x = type, y = new_rank, group = id, color = country)) +
+  geom_bump(size = 1.1, alpha = 0.8) +
+  geom_point(size = 3) +
+  geom_text(data = plotdata %>% filter(type == "all"),
+            aes(x = type, y = new_rank, label = name.formatted),
+            size = 3.5, nudge_x = -0.1, hjust = 1, color = "black") +
+  geom_text(data = plotdata %>% filter(type == "vax"),
+            aes(x = type, y = new_rank, label = name.formatted),
+            size = 3.5, nudge_x = 0.1, hjust = 0, color = "black") +
+  scale_x_discrete(labels = c("All COVID-19 research", "Vaccine research")) +
+  coord_cartesian(xlim = c(-0.5, 3.5)) +
+  scale_y_reverse() +
+  scale_color_manual(values = c("dodgerblue", "purple", "lightblue", "black", "orange", "firebrick")) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    axis.text.x = element_text(size = 10, face = "bold"),
+    axis.text.y = element_blank(),
+    axis.title = element_blank()
+  )
+```
+
+```{r}
+df <- read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_authors/leading_authors_covid-all_altmetrics.tsv", delim = "\t") %>%
+  slice(1)
+
+
+df %>%
+  select(titles, journal_titles, citations_1) %>%
+  mutate(
+    titles = str_split(titles, ";"),
+    journal_titles = str_split(journal_titles, ";"),
+    citations_1 = str_split(str_trim(gsub("\\[|\\]|  ", " ", citations_1)), " ")
+  ) %>%
+  unnest(c(titles, journal_titles, citations_1)) %>%
+  rename(Title = titles,
+         Journal = journal_titles,
+         Citations = citations_1)
+```
+
+
+```{r}
+library(treemapify)
+df <- read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/funding_orgs/funding_recipients_covid-all.tsv", delim = "\t")
+
+sector_levels = c("Education", "Healthcare", "Government", "Facility", "Nonprofit", "Company", "Other")
+
+country_levels = c("United States", "United Kingdom", "Canada", "China", "Germany", "Japan", "Other")
+
+df %>%
+  group_by(country) %>%
+  summarize(n = n()) %>%
+  arrange(desc(n))
+
+
+df %>%
+  filter(funder_org == "grid.14105.31") %>%
+  mutate(country = ifelse(country %in% country_levels, country, "Other")) %>%
+  group_by(id) %>% # divide amounts split among orgs
+  mutate(
+    amount = amount / sum(amount),
+  ) %>%
+  ungroup() %>%
+  mutate(total = sum(amount)) %>% # calculate the total across all grants
+  group_by(country) %>%
+  summarize(
+    n = n(),
+    prop = sum(amount) / first(total)
+  ) %>%
+  mutate(sector = factor(country, levels = country_levels)) %>%
+  mutate(label = paste0(country, "\n", round(prop, 3) * 100, "%")) %>%
+  ggplot(aes(area = prop, fill = sector, label = label)) +
+  geom_treemap(color = "black") +
+  geom_treemap_text(colour = "white", 
+                    place = "centre",
+                    grow = TRUE) +
+  theme_void() +
+  scale_fill_brewer(palette = "Dark2") +
+  theme(legend.position = "none")
+```

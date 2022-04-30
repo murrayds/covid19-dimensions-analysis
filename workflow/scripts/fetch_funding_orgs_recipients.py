@@ -23,16 +23,19 @@ project_id = "ccnr-success"
 # BigQuery SQL for fetching funding organizations
 bqsql = """
 SELECT
+  grants.id,
   grants.funder_org,
   title,
-  funders.name as funder_name,
-  funders.address.country,
+  recipients.name as recipient_name,
+  recipients.address.country,
+  recipients.types as recipient_types,
   funding_usd as amount,
-FROM `covid-19-dimensions-ai.data.grants` as grants
-LEFT JOIN `covid-19-dimensions-ai.data.grid` as funders on funders.id = grants.funder_org
-WHERE funders.name IS NOT NULL
+FROM `covid-19-dimensions-ai.data.grants` as grants,
+UNNEST(research_orgs) orgid
+LEFT JOIN `covid-19-dimensions-ai.data.grid` as recipients on recipients.id = orgid
+WHERE recipients.name IS NOT NULL AND funding_usd IS NOT NULL
 {condition}
-AND ("COVID-19" in UNNEST(concepts.concept));
+ORDER BY funder_org, amount, recipient_name;
 """
 
 # Setup the filtering condition, first the general COVID topic filter

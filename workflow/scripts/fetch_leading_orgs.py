@@ -8,7 +8,7 @@
 #
 # Included are conditions filtering to COVID, or COVID-Vacine research, as
 # well as ranking authors by publications, citations, or altmetrics
-# 
+#
 
 import pandas_gbq
 import tqdm
@@ -25,30 +25,34 @@ project_id = "ccnr-success"
 
 # BigQuery SQL for fetching leading organizations
 bqsql = """
-select
+SELECT
   counts.id,
-  counts.pubcount as pub_count,
+  counts.pubcount,
+  counts.top_10_percent,
+  ROUND(counts.top_10_percent / pubcount, 3) AS top_10_percent_prop,
   orgs.name,
-  orgs.address.country as country,
-  orgs.address.latitude as latitude,
-  orgs.address.longitude as longitude
-from
+  orgs.address.country AS country,
+  orgs.address.latitude AS latitude,
+  orgs.address.longitude AS longitude
+FROM
 (
-  select
+  SELECT
     orgs.id,
-    count(orgs.id) as pubcount
-  from (
-    SELECT id, orgid
+    COUNT(orgs.id) as pubcount,
+    SUM(CASE WHEN citation_percentile < 0.1 THEN 1 ELSE 0 END) as top_10_percent
+  FROM (
+    SELECT id, orgid, PERCENT_RANK() OVER (ORDER BY metrics.times_cited DESC) citation_percentile
     FROM `covid-19-dimensions-ai.data.publications`,
     UNNEST(research_orgs) orgid
     WHERE type = "article"  -- limit to research articles
-    {condition} -- This is where we insert a condition
+    {condition}
   ) as pubs
-  left join `covid-19-dimensions-ai.data.grid` as orgs on pubs.orgid = orgs.id
-  group by orgs.id
+  LEFT JOIN `covid-19-dimensions-ai.data.grid` AS orgs ON pubs.orgid = orgs.id
+  GROUP BY orgs.id
 ) as counts
-left join `covid-19-dimensions-ai.data.grid` as orgs on counts.id = orgs.id
-order by pub_count DESC
+LEFT JOIN `covid-19-dimensions-ai.data.grid` AS orgs ON counts.id = orgs.id
+WHERE pubcount > 100
+ORDER BY pubcount DESC
 """
 
 # Setup the filtering condition, first the general COVID topic filter

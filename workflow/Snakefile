@@ -30,9 +30,16 @@ LEADING_ORGS = j(BQ_HOME, "leading_orgs", "leading_orgs_{topic}.tsv")
 LEADING_AUTHORS = j(BQ_HOME, "leading_authors", "leading_authors_{topic}_{metric}.tsv")
 LEADING_PUBS = j(BQ_HOME, "leading_pubs", "leading_pubs_{topic}_{metric}.tsv")
 
+ORG_TOP_AUTHORS = j(BQ_HOME, 'leading_orgs', "org_top_authors.tsv")
+ORG_TOP_FUNDERS = j(BQ_HOME, 'leading_orgs', "org_top_funders.tsv")
+ORG_TOP_PUBS = j(BQ_HOME, 'leading_orgs', "org_top_pubs.tsv")
+
 PUB_CONCEPTS = j(BQ_HOME, "pub_concepts", "pub_concepts.tsv")
 
+CONCEPT_FREQ = j(BQ_HOME, "concept_frequencies.tsv")
+
 FUNDING_ORGS = j(BQ_HOME, "funding_orgs", "funding_orgs_{topic}.tsv")
+FUNDING_RECIPIENTS = j(BQ_HOME, "funding_orgs", "funding_recipients_{topic}.tsv")
 
 PUBS_OVER_TIME = j(BQ_HOME, "temporal", "pubs_over_time_{topic}.tsv")
 
@@ -48,8 +55,13 @@ rule all:
         expand(LEADING_ORGS, topic = TOPIC_FILTERS),
         expand(LEADING_AUTHORS, topic = TOPIC_FILTERS, metric = METRICS),
         expand(LEADING_PUBS, topic = TOPIC_FILTERS, metric = METRICS[1:]),
+        ORG_TOP_AUTHORS,
+        ORG_TOP_FUNDERS,
+        ORG_TOP_PUBS,
         PUB_CONCEPTS,
+        CONCEPT_FREQ,
         expand(FUNDING_ORGS, topic = TOPIC_FILTERS),
+        expand(FUNDING_RECIPIENTS, topic = TOPIC_FILTERS),
         expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS)
 
 rule fetch_leading_orgs:
@@ -69,15 +81,40 @@ rule fetch_leading_pubs:
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_leading_pubs.py"
 
+rule fetch_org_top_authors:
+    output: ORG_TOP_AUTHORS,
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_org_top_authors.py"
+
+rule fetch_org_top_funders:
+    output: ORG_TOP_FUNDERS,
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_org_top_funders.py"
+
+rule fetch_org_top_pubs:
+    output: ORG_TOP_PUBS,
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_org_top_pubs.py"
+
 rule fetch_pub_concepts:
     output: PUB_CONCEPTS
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_pub_concepts.py"
 
+rule fetch_concept_frequencies:
+    output: CONCEPT_FREQ
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_concept_frequency.py"
+
 rule fetch_funding_orgs:
     output: FUNDING_ORGS
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_funding_orgs.py"
+
+rule fetch_funding_orgs_recipients:
+    output: FUNDING_RECIPIENTS
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_funding_orgs_recipients.py"
 
 rule fetch_pubs_over_time:
     output: PUBS_OVER_TIME

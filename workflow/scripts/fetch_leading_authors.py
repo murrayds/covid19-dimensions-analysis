@@ -61,21 +61,43 @@ researcher_orgs AS (
 ),
 researcher_concepts AS (
   -- Get the concepts associated with papers they published
-  SELECT top.researcher_id, ARRAY_CONCAT_AGG(concepts) AS concepts
-  FROM `covid-19-dimensions-ai.data.publications` AS p
+  SELECT top.researcher_id, STRING_AGG(c.concept, ";") AS concepts
+  FROM `covid-19-dimensions-ai.data.publications` AS p,
+  UNNEST(concepts) c
   INNER JOIN top_researchers AS top ON top.researcher_id IN UNNEST(p.authors.researcher_id)
   GROUP BY top.researcher_id
 ),
 researcher_fields AS (
   -- determines the field of research code in which
   -- the researcher has most frequently authored papers
-  SELECT top.researcher_id, for2.name, COUNT(DISTINCT p.id) AS cat_count,
+  SELECT top.researcher_id, for2.name as discipline, COUNT(DISTINCT p.id) AS cat_count,
   FROM `covid-19-dimensions-ai.data.publications` AS p
   INNER JOIN top_researchers AS top ON top.researcher_id IN UNNEST(p.authors.researcher_id)
   CROSS JOIN UNNEST(category_for.second_level.full) AS for2
   WHERE TRUE
   GROUP BY top.researcher_id, for2.name
   QUALIFY ROW_NUMBER() OVER (PARTITION BY top.researcher_id ORDER BY cat_count DESC) = 1
+),
+researcher_pubs AS (
+  SELECT
+    researcher_id,
+    STRING_AGG(title, ";") as titles,
+    STRING_AGG(journal_title, ";") as journal_titles,
+    ARRAY_AGG(citations) as citations
+    FROM (
+        SELECT
+          top.researcher_id,
+          pubs.title.preferred as title,
+          pubs.journal.title as journal_title,
+          pubs.metrics.times_cited as citations,
+          RANK() OVER(PARTITION BY researcher_id ORDER BY metrics.times_cited DESC) rank
+        FROM `covid-19-dimensions-ai.data.publications` as pubs,
+        UNNEST(researcher_ids) researcher
+        INNER JOIN top_researchers AS top on top.researcher_id = researcher
+        ORDER BY researcher_id, rank DESC
+      )
+    WHERE rank <= 5
+    GROUP BY researcher_id
 )
 
 -- Now, select from out temporary tables defined above
@@ -83,11 +105,14 @@ SELECT
   top.*,
   fields.* except(cat_count, researcher_id),
   concepts.* except(researcher_id),
-  orgs.* except(org_count, researcher_id)
+  orgs.* except(org_count, researcher_id),
+  pubs.* except(researcher_id)
 FROM top_researchers AS top
 LEFT JOIN researcher_fields AS fields on fields.researcher_id = top.researcher_id
 LEFT JOIN researcher_concepts AS concepts on concepts.researcher_id = top.researcher_id
 LEFT JOIN researcher_orgs AS orgs ON orgs.researcher_id = top.researcher_id
+LEFT JOIN researcher_pubs AS pubs ON pubs.researcher_id = top.researcher_id
+ORDER BY top.{metric} DESC
 """
 
 # Setup the filtering condition, first the general COVID topic filter
@@ -97,6 +122,8 @@ condition = covid_filter_bqsql
 if "covid-vaccine" in snakemake.output[0]:
     condition = covid_filter_bqsql + "\n" + vaccine_filter_bqsql
 
+print(bqsql.format(condition = condition,
+                                      metric = snakemake.params[0]))
 # Save results to a dataframe
 df = pandas_gbq.read_gbq(bqsql.format(condition = condition,
                                       metric = snakemake.params[0]),
