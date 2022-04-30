@@ -8,7 +8,7 @@
 #
 # Included are conditions filtering to COVID, or COVID-Vacine research, as
 # well as ranking authors by publications, citations, or altmetrics
-# 
+#
 
 import pandas_gbq
 import tqdm
@@ -40,7 +40,7 @@ select
   where type = "article"
   {condition}
   order by {metric} DESC
-  limit 5;
+  limit 50;
 """
 
 # Setup the filtering condition, first the general COVID topic filter
