@@ -9,10 +9,8 @@
 
 library(shiny)
 library(tidyverse)
-library(ggrepel)
 library(DT)
 library(ggwordcloud)
-library(treemapify)
 
 
 source("org-table.R")
@@ -190,12 +188,14 @@ shinyServer(function(input, output) {
       print(paste("Your selected row:", selId))
     }
     
-    # Sub-table showing the most cited publications of selected author
-    output$funder.top.grants = generate_sub_table(genrate_funder_top_grants_table(get_funder_table(topic), selId), columnDefs=list(list(targets=1, className="dt-right")))
+    # Sub-table showing the biggest grants associated with each funder
+    # NOTE: Commented out, as I thought it wansn't actually that useful
+    # output$funder.top.grants = generate_sub_table(genrate_funder_top_grants_table(get_funder_table(topic), selId), columnDefs=list(list(targets=1, className="dt-right")))
     
-    
+    # Sub-table showing the top recipients from each funder
     output$funder.recipients = generate_sub_table(genrate_funder_recipient_table(get_recipient_table(topic), selId), columnDefs=list(list(targets=2, className="dt-right")))
     
+    # Plots showing the distribution of a funder's support across sectors(first) and countries (second)
     output$funder.recipients.sectors = renderPlot({generate_sector_treemap(selId, topic)})
     output$funder.recipients.countries = renderPlot({generate_country_treemap(selId, topic)})
     

@@ -4,6 +4,8 @@
 # author: dakota.s.murray@gmail.com
 #
 
+library(treemapify)
+
 #
 # HARD-CODED FACTOR LEVELS
 #
@@ -87,7 +89,9 @@ genrate_funder_top_grants_table <- function(table, selId) {
     )
 }
 
-
+#
+# PLOT BUILDERS
+#
 genrate_funder_recipient_table <- function(table, selId) {
   table %>%
     filter(selId == funder_org) %>%
@@ -110,7 +114,7 @@ genrate_funder_recipient_table <- function(table, selId) {
     )
 }
 
-
+# Bulds a treemap of funding by sector of recipient
 generate_sector_treemap <- function(selId, topic) {
   get_recipient_table(topic) %>%
     filter(funder_org == selId) %>%
@@ -138,6 +142,7 @@ generate_sector_treemap <- function(selId, topic) {
     theme(legend.position = "none")
 }
 
+# Bulds a treemap of funding by country of recipient
 generate_country_treemap <- function(selId, topic) {
   get_recipient_table(topic) %>%
     filter(funder_org == selId) %>%

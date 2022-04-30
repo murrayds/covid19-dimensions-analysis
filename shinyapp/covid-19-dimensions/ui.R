@@ -133,8 +133,8 @@ shinyUI(
                                   column(align = "left", 
                                          h4("Recipient countries"), 
                                          plotOutput("funder.recipients.countries") %>% withSpinner(color="darkgrey"), width = 6)),
-                       )
-                ),
+                       ) # End verticalLayout
+                ), # End column
                 width = 12
               ) # End mainPanel
             ), # End tabPanel
