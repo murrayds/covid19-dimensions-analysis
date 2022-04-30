@@ -82,5 +82,60 @@ shinyUI(
                 width = 12
               ) # End mainPanel
             ), # End tabPanel
+            #
+            # PUBLICATION TABLE PANEL
+            #
+            tabPanel(
+              "Leading publications",
+              mainPanel(
+                h4("Leading publications relevant to COVID-19 research"),
+                radioButtons("pub.metric", "Ranking metric:",
+                             c("Citations" = "citations",
+                               "Altmetrics" = "altmetrics"
+                             ),
+                             inline = TRUE),
+                column(12, align = "left",
+                       fluidRow(column(tabsetPanel(
+                         id = "pub.tabSwitch",
+                         tabPanel("All COVID-19 Research", DT::dataTableOutput("pub.covid.all.table")),
+                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("pub.covid.vaccine.table")),
+                       ), 
+                       width = 12),
+                       )
+                ), # End column
+                width = 12
+                
+              ) # End mainPanel
+            ), # End tabPanel
+            #
+            # FUNDER TABLE PANEL
+            #
+            tabPanel(
+              "Leading funders",
+              mainPanel(
+                h4("Leading funding organizations supporting COVID-19 research"),
+                width = 12
+              ) # End mainPanel
+            ), # End tabPanel
+            #
+            # LANDSCAPE OF COVID-19 RESEARCH
+            #
+            tabPanel(
+              "Landscape",
+              mainPanel(
+                h4("Topical landscape of COVID-19 research"),
+                width = 12
+              ) # End mainPanel
+            ), # End tabPanel
+            #
+            # TRENDS IN COVID-19 RESEARCH
+            #
+            tabPanel(
+              "Trends",
+              mainPanel(
+                h4("Temporal changes in COVID-19 research"),
+                width = 12
+              ) # End mainPanel
+            ), # End tabPanel
   ) # End navbarPage
 )

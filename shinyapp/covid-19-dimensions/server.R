@@ -16,6 +16,25 @@ library(ggwordcloud)
 
 source("org-table.R")
 source("author-table.R")
+source("pub-table.R")
+
+generate_main_table <- function(table, selection = "single", scrollable = TRUE) {
+  DT::renderDataTable(table,
+                      options = list(
+                        paging = TRUE,    ## paginate the output
+                        pageLength = 15,  ## number of rows to output for each page
+                        scrollX = scrollable,   ## enable scrolling on X axis
+                        scrollY = scrollable,   ## enable scrolling on Y axis
+                        autoWidth = TRUE, ## use smart column width handling
+                        server = FALSE,   ## use client-side processing
+                        dom = 'Bfrtip',
+                        buttons = c('csv', 'excel'),
+                      ),
+                      selection = list(mode = selection, selected = c(1)),
+                      class = "small nowrap",
+                      extensions = 'Buttons',
+                      escape = FALSE)
+}
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -29,7 +48,6 @@ shinyServer(function(input, output) {
   author.table.selection.listener <- reactive({
     list(input$author.covid.all.table_rows_selected, input$author.covid.vaccine.table_rows_selected, input$author.tabSwitch)
   })
-  
   
   
   #
@@ -100,9 +118,18 @@ shinyServer(function(input, output) {
     # Now populate the wordcloud
     set.seed(1111)
     output$author.wordcloud = renderPlot(get_concept_wordcloud(table))
-    
   })
   
+  
+  
+  
+  #
+  # Author-Table Outputs
+  #
+  observeEvent(input$pub.metric, {
+    output$pub.covid.all.table = generate_main_table(generate_pub_table(get_pub_table("all", input$pub.metric)), "none", FALSE)
+    output$pub.covid.vaccine.table = generate_main_table(generate_pub_table(get_pub_table("vaccine", input$pub.metric)), "none", FALSE)
+  })
   
 
 })
