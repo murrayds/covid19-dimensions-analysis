@@ -30,6 +30,7 @@ SELECT
   ANY_VALUE(DATE_TRUNC(SAFE_CAST(pubs.date_online AS DATE), MONTH)) as published_date,
   STRING_AGG(c.name, ",") AS fields,
   ANY_VALUE(journal.title) AS journal_title, -- the title of the journal
+  ANY_VALUE(open_access_categories) as open_access,
   --ANY_VALUE(metrics.times_cited) AS times_cited,
   --ANY_VALUE(altmetrics.score) AS altmetrics_score
   FROM `covid-19-dimensions-ai.data.publications` AS pubs,

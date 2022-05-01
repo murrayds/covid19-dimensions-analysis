@@ -172,8 +172,14 @@ shinyUI(
             tabPanel(
               "Trends",
               sidebarLayout(
-                sidebarPanel(selectInput("trends.country", "Choose a country:",
-                                         list(`North America` = list("United States", "Canada", "Mexico"),
+                sidebarPanel(
+                          radioButtons("trends.topic", "Research topic:",
+                               c("All COVID-19 Research" = "all",
+                                 "COVID-19 Vaccine Research" = "vaccine")
+                          ),
+                          selectInput("trends.country", "Choose a country:",
+                                         list(`Worldwide` = list("All"),
+                                              `North America` = list("United States", "Canada", "Mexico"),
                                               `Europe` = list("Belgium", "Denmark", "France", "Germany","Italy",
                                                               "Netherlands", "Poland", "Portugal", "Spain", 
                                                               "Russia", "Sweden", "Switzerland", "United Kingdom"),
@@ -184,6 +190,7 @@ shinyUI(
                 ), # END sidebarPanel
                 mainPanel(
                   h4("Temporal changes in COVID-19 research"),
+                  p("The rate and topical distribution of COVID-19 research has evovled over time and is different across countires. Using this dashboard, it is possible to expore how many publications a country produced across each quarter throughout the pandemic, as well as the distribution of publications across topic categories"),
                   column(align = "left", 
                          width = 12,
                          fluidRow(plotlyOutput("trends.country.absolute") %>% withSpinner(color="darkgrey"), width = 12),

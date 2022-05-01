@@ -76,6 +76,10 @@ shinyServer(function(input, output) {
     list(input$funder.covid.all.table_rows_selected, input$funder.covid.vaccine.table_rows_selected, input$funder.tabSwitch)
   })
   
+  trends.listener <- reactive({
+    list(input$trends.topic, input$trends.country)
+  })
+  
   
   #
   # Org-Table Outputs
@@ -208,31 +212,34 @@ shinyServer(function(input, output) {
     ggplotly(generate_concept_projection(), tooltip = "label")
   })
   
-  get_country_trends_table_all <- reactive({
+  get_country_table_all <- reactive({
     read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/temporal/pubs_over_time_covid-all.tsv", delim = "\t")
   })
   
-  get_country_trends_table_vaccine <- reactive({
+  get_country_table_vaccine <- reactive({
     read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/temporal/pubs_over_time_covid-vaccine.tsv", delim = "\t")
   })
   
   
+  trends_fields_colors <- c("Medical and Health Sciences" = "#e31a1c", 
+                            "Studies in Human Society" = "#1f78b4", 
+                            "Biological Sciences" = "#b2df8a", 
+                            "Mathematical Sciences" = "#33a02c", 
+                            "Agricultural and Veterinary Sciences" = "#fb9a99", 
+                            "Chemical Sciences" = "#6a3d9a",
+                            "Information and Computing Sciences" = "#fdbf6f",
+                            "Engineering" = "#ff7f00",
+                            "Other" = "grey")
   
-  observeEvent(input$trends.country, {
+  observeEvent(trends.listener(), {
     print(input$trends.country)
-    trends_fields_colors <- c("Medical and Health Sciences" = "#e31a1c", 
-                              "Studies in Human Society" = "#1f78b4", 
-                              "Biological Sciences" = "#b2df8a", 
-                              "Mathematical Sciences" = "#33a02c", 
-                              "Agricultural and Veterinary Sciences" = "#fb9a99", 
-                              "Chemical Sciences" = "#6a3d9a",
-                              "Information and Computing Sciences" = "#fdbf6f",
-                              "Engineering" = "#ff7f00",
-                              "Other" = "grey")
+    print(input$trends.topic)
+    table <- NULL
+    if(input$trends.topic == "all") { table <- get_country_table_all() } else { table <- get_country_table_vaccine() }
     
     output$trends.country.absolute <- renderPlotly({
-      get_country_trends_table_all() %>%
-        filter(grepl(input$trends.country, countries, fixed = T)) %>%
+      table %>%
+        filter(input$trends.country == "All" | grepl(input$trends.country, countries, fixed = T)) %>%
         mutate(fields = str_split(fields, ",")) %>%
         select(fields, published_date) %>%
         unnest(fields) %>%
@@ -267,8 +274,8 @@ shinyServer(function(input, output) {
       
       
     output$trends.country.relative <- renderPlotly({
-      get_country_trends_table_all() %>%
-        filter(grepl(input$trends.country, countries, fixed = T)) %>%
+      table %>%
+        filter(input$trends.country == "All" | grepl(input$trends.country, countries, fixed = T)) %>%
         mutate(fields = str_split(fields, ",")) %>%
         select(fields, published_date) %>%
         unnest(fields) %>%
