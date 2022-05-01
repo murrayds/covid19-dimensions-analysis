@@ -11,7 +11,7 @@ library(shiny)
 library(tidyverse)
 library(DT)
 library(ggwordcloud)
-
+library(plotly)
 
 source("org-table.R")
 source("author-table.R")
@@ -198,6 +198,26 @@ shinyServer(function(input, output) {
     # Plots showing the distribution of a funder's support across sectors(first) and countries (second)
     output$funder.recipients.sectors = renderPlot({generate_sector_treemap(selId, topic)})
     output$funder.recipients.countries = renderPlot({generate_country_treemap(selId, topic)})
+    
+  })
+  
+  concept.projection.table <- reactive({
+    read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/derived/embedding/coords/concept_embedding_projection_df_50.tsv", delim = "\t")
+  })
+  
+  output$concept.projection <- renderPlotly({
+    ggplotly(ggplot(concept.projection.table(), 
+                   aes(x = axis1, y = axis2, 
+                       label = concept, 
+                       fill = as.character(cls), 
+                       size = n)
+      ) +
+      geom_point(shape = 21, color = "black", stroke = 0.2, alpha = 0.6) +
+      scale_size_continuous(range = c(0.75, 10)) +
+      scale_fill_brewer(palette = "Dark2") +
+      theme_void() +
+      theme(legend.position = "none"), tooltip = c("label"))
+    
     
   })
 

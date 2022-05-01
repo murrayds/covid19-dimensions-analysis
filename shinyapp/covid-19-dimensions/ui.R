@@ -147,6 +147,7 @@ shinyUI(
               "Landscape",
               mainPanel(
                 h4("Topical landscape of COVID-19 research"),
+                fluidRow(plotlyOutput("concept.projection", height = "800px") %>% withSpinner(color="darkgrey"), width = 12) ,
                 width = 12
               ) # End mainPanel
             ), # End tabPanel
