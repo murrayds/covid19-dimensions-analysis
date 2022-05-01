@@ -171,10 +171,26 @@ shinyUI(
             #
             tabPanel(
               "Trends",
-              mainPanel(
-                h4("Temporal changes in COVID-19 research"),
-                width = 12
-              ) # End mainPanel
+              sidebarLayout(
+                sidebarPanel(selectInput("trends.country", "Choose a country:",
+                                         list(`North America` = list("United States", "Canada", "Mexico"),
+                                              `Europe` = list("Belgium", "Denmark", "France", "Germany","Italy",
+                                                              "Netherlands", "Poland", "Portugal", "Spain", 
+                                                              "Russia", "Sweden", "Switzerland", "United Kingdom"),
+                                              `Asia/Oceania` = list("Australia", "New Zealand", "China", "India", "Indonesia", "Japan", "South Korea"),
+                                              `South America` = list("Brazil", "Peru", "Argentina", "Chile"),
+                                              `Africa` = list("Egypt", "Kenya", "Nigeria", "South Africa", "Zimbabwe"))
+                            ), width = 2
+                ), # END sidebarPanel
+                mainPanel(
+                  h4("Temporal changes in COVID-19 research"),
+                  column(align = "left", 
+                         width = 12,
+                         fluidRow(plotlyOutput("trends.country.absolute") %>% withSpinner(color="darkgrey"), width = 12),
+                         fluidRow(plotlyOutput("trends.country.relative") %>% withSpinner(color="darkgrey"), width = 12)
+                  ) # END column
+                ),
+              ) # End sidebarLayout
             ), # End tabPanel
   ) # End navbarPage
 )

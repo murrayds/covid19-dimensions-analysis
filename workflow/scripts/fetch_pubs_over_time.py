@@ -25,15 +25,15 @@ project_id = "ccnr-success"
 # BigQuery SQL for fetching leading publications
 bqsql = """
 SELECT
-  ARRAY_CONCAT_AGG(pubs.research_org_countries) AS countries,
-  ARRAY_CONCAT_AGG(pubs.research_org_state_codes) AS states,
+  ARRAY_CONCAT_AGG(pubs.research_org_country_names) AS countries,
+  --ARRAY_CONCAT_AGG(pubs.research_org_state_codes) AS states,
   ANY_VALUE(DATE_TRUNC(SAFE_CAST(pubs.date_online AS DATE), MONTH)) as published_date,
   STRING_AGG(c.name, ",") AS fields,
   ANY_VALUE(journal.title) AS journal_title, -- the title of the journal
-  ANY_VALUE(metrics.times_cited) AS times_cited,
-  ANY_VALUE(altmetrics.score) AS altmetrics_score
+  --ANY_VALUE(metrics.times_cited) AS times_cited,
+  --ANY_VALUE(altmetrics.score) AS altmetrics_score
   FROM `covid-19-dimensions-ai.data.publications` AS pubs,
-  UNNEST(category_for.second_level.full) c
+  UNNEST(category_for.first_level.full) c
   WHERE pubs.type = "article"
   {condition}
   GROUP BY (pubs.id)
