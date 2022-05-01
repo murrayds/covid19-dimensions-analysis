@@ -68,15 +68,15 @@ researcher_concepts AS (
   GROUP BY top.researcher_id
 ),
 researcher_fields AS (
-  -- determines the field of research code in which
-  -- the researcher has most frequently authored papers
-  SELECT top.researcher_id, for2.name as discipline, COUNT(DISTINCT p.id) AS cat_count,
+  -- get all the fields the researcher published in
+  SELECT
+  top.researcher_id,
+  STRING_AGG(for2.name, ";") as fields,
   FROM `covid-19-dimensions-ai.data.publications` AS p
   INNER JOIN top_researchers AS top ON top.researcher_id IN UNNEST(p.authors.researcher_id)
-  CROSS JOIN UNNEST(category_for.second_level.full) AS for2
+  CROSS JOIN UNNEST(category_for.first_level.full) AS for2
   WHERE TRUE
-  GROUP BY top.researcher_id, for2.name
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY top.researcher_id ORDER BY cat_count DESC) = 1
+  GROUP BY top.researcher_id
 ),
 researcher_pubs AS (
   SELECT
@@ -103,7 +103,7 @@ researcher_pubs AS (
 -- Now, select from out temporary tables defined above
 SELECT
   top.*,
-  fields.* except(cat_count, researcher_id),
+  fields.* except(researcher_id),
   concepts.* except(researcher_id),
   orgs.* except(org_count, researcher_id),
   pubs.* except(researcher_id)

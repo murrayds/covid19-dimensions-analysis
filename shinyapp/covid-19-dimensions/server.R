@@ -142,9 +142,10 @@ shinyServer(function(input, output) {
     # Sub-table showing the most cited publications of selected author
     output$author.top.pubs = generate_sub_table(get_selected_author_top_pubs(selId, table))
     
-    # Now populate the wordcloud
-    set.seed(1111)
-    output$author.wordcloud = renderPlot(get_concept_wordcloud(table))
+    # Now populate the treemap & keyword table
+    output$author.fields = renderPlot(get_field_treemap(table, selId))
+    print("getting author keywords")
+    output$author.keywords = generate_sub_table(get_author_keywords(table, selId))
   })
   
   
@@ -201,7 +202,6 @@ shinyServer(function(input, output) {
     output$funder.recipients.countries = renderPlot({generate_country_treemap(selId, topic)})
     
   })
-  
   
   
   output$concept.projection <- renderPlotly({

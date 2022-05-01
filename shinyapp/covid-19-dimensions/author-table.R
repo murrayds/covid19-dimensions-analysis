@@ -5,6 +5,21 @@
 #
 
 #
+# 
+#
+fields_levels <- c("Medical and Health Sciences", "Studies in Human Society", "Biological Sciences", "Mathematical Sciences", "Agricultural and Veterinary Sciences", "Psychology and Cognitive Sciences", "Information and Computing Sciences", "Other")
+
+fields_colors <- c("Medical and Health Sciences" = "#e7298a", 
+                   "Studies in Human Society" = "#7570b3", 
+                   "Psychology and Cognitive Sciences" = "#e6ab02",
+                   "Biological Sciences" = "#d95f02", 
+                   "Mathematical Sciences" = "#66a61e", 
+                   "Agricultural and Veterinary Sciences" = "#1b9e77", 
+                   "Information and Computing Sciences" = "#a6761d",
+                   "Other" = "grey")
+
+
+#
 # DATA GETTERS
 #
 get_author_table <- function(topic, metric) {
@@ -16,6 +31,18 @@ get_author_table <- function(topic, metric) {
                     delim = "\t"))
 }
 
+get_concept_freq <- reactive({
+  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/concept_frequencies.tsv", delim = "\t") %>% 
+    group_by(concept) %>% 
+    summarize(n = sum(n)) %>%
+    mutate(prop = n / sum(n)) %>%
+    ungroup() %>%
+    filter(!concept %in% c("COVID-19", "coronavirus disease 2019", "COVID-19 vaccination", "vaccination", "COVID-19 pandemic", "study", "SARS-CoV-2", "vaccine"))
+})
+
+#
+# TABLE BUILDERS
+#
 get_selected_author_top_pubs <- function(selId, table) {
   table %>%
     filter(researcher_id == selId) %>%
@@ -34,10 +61,7 @@ get_selected_author_top_pubs <- function(selId, table) {
   
 }
 
-
-# Generate the main table
 generate_author_table <- function(df) {
-  print("Hello!")
   DT::renderDataTable({
     df %>%
       mutate(name = paste0(first_name, " ", last_name)) %>%
@@ -65,26 +89,45 @@ generate_author_table <- function(df) {
 }
 
 
-
-get_concept_wordcloud <- function(table) {
-  table %>%
-    select(concepts) %>%
+get_author_keywords <- function(table, selId) {
+  table %>%  
+    filter(researcher_id == selId) %>%
     mutate(concepts = str_split(concepts, ";")) %>%
+    select(concepts)%>%
     unnest(concepts) %>%
-    filter(!concepts %in% c("COVID-19", "SARS-CoV-2", "study", "patients", "infection", "disease", 
-                            "results", "data", "analysis", "pandemic", "cases", "vaccine",
-                            "virus", "response")) %>%
     group_by(concepts) %>%
-    summarize(
-      n = n()
-    ) %>%
+    summarize(n = n()) %>%
+    ungroup() %>%
+    distinct(.keep_all = T) %>%
+    mutate(prop = n / sum(n)) %>%
+    inner_join(get_concept_freq(), by = c("concepts" = "concept")) %>%
+    mutate(diff = prop.x - prop.y) %>%
+    arrange(desc(diff)) %>%
+    top_n(15, prop.x)  %>%
+    select(concepts) %>%
+    rename(Concept = concepts)
+}
+
+#
+# PLOT BUILDERS
+#
+get_field_treemap <- function(table, selId) {
+  table %>%
+    filter(researcher_id == selId) %>%
+    select(fields) %>%
+    mutate(fields = str_split(fields, ";")) %>%
+    unnest(fields) %>%
+    mutate(fields = ifelse(fields %in% fields_levels, fields, "Other")) %>%
+    group_by(fields) %>%
+    summarize(n = n()) %>%
     arrange(desc(n)) %>%
-    top_n(20, n) %>%
-    mutate(angle = 0) %>%
-    ggplot(aes(label = concepts, size = n, color = n)) +
-    geom_text_wordcloud_area(shape = "circle") +
-    scale_size_area(max_size = 8) +
-    scale_color_gradient(low = "black", high = "darkblue") +
-    theme_minimal() +
-    theme(panel.background = element_rect(fill = NA, size = 0.25, color = "black"))
+    mutate(prop = n / sum(n)) %>%
+    ggplot(aes(area = prop, fill = fields, label = str_wrap(fields, width = 15))) +
+    geom_treemap(color = "black") +
+    geom_treemap_text(colour = "white", 
+                      place = "centre",
+                      grow = TRUE) +
+    theme_void() +
+    scale_fill_manual(values = fields_colors) +
+    theme(legend.position = "none")
 }

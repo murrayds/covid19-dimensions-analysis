@@ -75,9 +75,21 @@ shinyUI(
                 column(5,
                        verticalLayout(
                          h4("Top Publications"),
-                         fluidRow(column(align = "left", DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="darkgrey"), width = 12)) ,
-                         h4("Top Keywords"),
-                         fluidRow(column(align = "left", plotOutput("author.wordcloud") %>% withSpinner(color="darkgrey"), width = 12)),
+                         fluidRow(column(align = "left", 
+                                         DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="darkgrey"), 
+                                         width = 12),
+                                  height = "50%") ,
+                         fluidRow(
+                           column(align = "left", 
+                                  h4("Field of publications"),
+                                  plotOutput("author.fields") %>% withSpinner(color="darkgrey"), 
+                                  width = 8),
+                           column(align = "left", 
+                                  h4("Keywords"),
+                                  DT::dataTableOutput("author.keywords") %>% withSpinner(color="darkgrey"), 
+                                  width = 4),
+                           height = "50%"
+                           ),
                        )
                 ),
                 width = 12
