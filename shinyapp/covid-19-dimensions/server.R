@@ -17,6 +17,7 @@ source("org-table.R")
 source("author-table.R")
 source("pub-table.R")
 source("funder-table.R")
+source("concept-projection.R")
 
 generate_main_table <- function(table, selection = "single", scrollable = TRUE, columnDefs = list()) {
   DT::renderDataTable(table,
@@ -201,24 +202,10 @@ shinyServer(function(input, output) {
     
   })
   
-  concept.projection.table <- reactive({
-    read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/derived/embedding/coords/concept_embedding_projection_df_50.tsv", delim = "\t")
-  })
+  
   
   output$concept.projection <- renderPlotly({
-    ggplotly(ggplot(concept.projection.table(), 
-                   aes(x = axis1, y = axis2, 
-                       label = concept, 
-                       fill = as.character(cls), 
-                       size = n)
-      ) +
-      geom_point(shape = 21, color = "black", stroke = 0.1, alpha = 0.6) +
-      scale_size_continuous(range = c(0.75, 10)) +
-      scale_fill_brewer(palette = "Dark2") +
-      theme_void() +
-      theme(legend.position = "none"), tooltip = c("label"))
-    
-    
+    ggplotly(generate_concept_projection(), tooltip = "label")
   })
 
 })
