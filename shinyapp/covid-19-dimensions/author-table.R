@@ -103,7 +103,7 @@ get_author_keywords <- function(table, selId) {
     inner_join(get_concept_freq(), by = c("concepts" = "concept")) %>%
     mutate(diff = prop.x - prop.y) %>%
     arrange(desc(diff)) %>%
-    top_n(15, prop.x)  %>%
+    top_n(16, prop.x)  %>%
     select(concepts) %>%
     rename(Concept = concepts)
 }
