@@ -56,7 +56,7 @@ shinyUI(
               mainPanel(
                 h4("Leading authors pursuing COVID-19 and vaccine research"),
                 p("There are many ", strong(em("dimensions")), " that can be used to judge the most excellent researchers pusruing COVID-19 research. Their number of publications speaks to a researcher's productivity, whereas their total citations instead illustrates their impact. Some researchers may instead generate social impact measured through ", strong(em("altmetrics")), "."),
-                p("These tables show the top 50 researchers pursuing COVID-19 and vaccine research around the world, measured by their publications, citations, and altmetrics score. Use the controls here to select the ranking metric to use and whether to highlight all COVID-19 researchers, or only those pursuing research into vaccines. Selecting a researcher will show their most cited publications, as well as a visualization of their most frequently-used keywords"),
+                p("These tables show the top 50 researchers pursuing COVID-19 and vaccine research around the world, measured by their publications, citations, and altmetrics score. Use the controls here to select the ranking metric to use and whether to highlight all COVID-19 researchers, or only those pursuing research into vaccines. Selecting a research will show the distribution of their publications across major fields of study, as well as their most over-represented topics, relative to their occurence across all COVID-19 papers."),
                 radioButtons("author.metric", "Ranking metric:",
                              c("Publications" = "pubcount",
                                "Citations" = "citations",
