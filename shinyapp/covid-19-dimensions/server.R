@@ -212,7 +212,7 @@ shinyServer(function(input, output) {
                        fill = as.character(cls), 
                        size = n)
       ) +
-      geom_point(shape = 21, color = "black", stroke = 0.2, alpha = 0.6) +
+      geom_point(shape = 21, color = "black", stroke = 0.1, alpha = 0.6) +
       scale_size_continuous(range = c(0.75, 10)) +
       scale_fill_brewer(palette = "Dark2") +
       theme_void() +
