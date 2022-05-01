@@ -34,4 +34,4 @@ coords.formatted <- coords %>%
   filter(n > 10) %>%
   mutate(n = n / max(n, na.rm = T))
 
-write_csv(coords.formatted, snakemake@output[[1]])
+write_delim(coords.formatted, snakemake@output[[1]], delim = "\t")

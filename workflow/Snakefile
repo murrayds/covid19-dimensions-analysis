@@ -23,6 +23,7 @@ configfile:
 DATA_HOME = config['data_path']
 BQ_HOME = j(DATA_HOME, "bq-data")
 DERIVED = j(DATA_HOME, "derived")
+FIGURES = j(DATA_HOME, "figures")
 
 ###############################################################################
 # BQ Data Files
@@ -47,6 +48,7 @@ PUBS_OVER_TIME = j(BQ_HOME, "temporal", "pubs_over_time_{topic}.tsv")
 CONCEPT_EMBEDDING = j(DERIVED, "embedding", "concepts_embedding_{dim}.bin")
 CONCEPT_EMBEDDING_2D = j(DERIVED, "embedding", "concepts_embedding_projection_{dim}.tsv")
 CONCEPT_PROJECTION_DF = j(DERIVED, "embedding", "coords", "concept_embedding_projection_df_{dim}.tsv")
+CONCEPT_PROJECTION_PLOT = j(FIGURES, "embedding", "concept_embedding_projection_{dim}_plot.png")
 
 TOPIC_FILTERS = ["covid-all", "covid-vaccine"]
 METRICS = ["pubcount", "citations", "altmetrics"]
@@ -72,7 +74,8 @@ rule all:
         expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS),
         expand(CONCEPT_EMBEDDING, dim = W2VDIMS),
         expand(CONCEPT_EMBEDDING_2D, dim = W2VDIMS),
-        expand(CONCEPT_PROJECTION_DF, dim = W2VDIMS)
+        expand(CONCEPT_PROJECTION_DF, dim = W2VDIMS),
+        expand(CONCEPT_PROJECTION_PLOT, dim = W2VDIMS)
 
 rule fetch_leading_orgs:
     output: LEADING_ORGS
@@ -151,3 +154,10 @@ rule build_projection_dataframe:
     output: CONCEPT_PROJECTION_DF
     conda: "envs/r.yaml"
     script: "scripts/build_projection_dataframe.R"
+
+rule plot_projection_dataframe:
+    input:
+        rules.build_projection_dataframe.output,
+    output: CONCEPT_PROJECTION_PLOT
+    conda: "envs/r.yaml"
+    script: "scripts/plot_projection_dataframe.R"
