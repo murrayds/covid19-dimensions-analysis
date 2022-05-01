@@ -22,6 +22,8 @@ configfile:
 ###############################################################################
 DATA_HOME = config['data_path']
 BQ_HOME = j(DATA_HOME, "bq-data")
+DERIVED = j(DATA_HOME, "derived")
+FIGURES = j(DATA_HOME, "figures")
 
 ###############################################################################
 # BQ Data Files
@@ -43,9 +45,16 @@ FUNDING_RECIPIENTS = j(BQ_HOME, "funding_orgs", "funding_recipients_{topic}.tsv"
 
 PUBS_OVER_TIME = j(BQ_HOME, "temporal", "pubs_over_time_{topic}.tsv")
 
+CONCEPT_EMBEDDING = j(DERIVED, "embedding", "concepts_embedding_{dim}.bin")
+CONCEPT_EMBEDDING_2D = j(DERIVED, "embedding", "concepts_embedding_projection_{dim}.tsv")
+CONCEPT_PROJECTION_DF = j(DERIVED, "embedding", "coords", "concept_embedding_projection_df_{dim}.tsv")
+CONCEPT_PROJECTION_PLOT = j(FIGURES, "embedding", "concept_embedding_projection_{dim}_plot.png")
+
 TOPIC_FILTERS = ["covid-all", "covid-vaccine"]
 METRICS = ["pubcount", "citations", "altmetrics"]
 
+
+W2VDIMS =[50, 100, 150]
 
 ###############################################################################
 # Target Rule
@@ -62,7 +71,11 @@ rule all:
         CONCEPT_FREQ,
         expand(FUNDING_ORGS, topic = TOPIC_FILTERS),
         expand(FUNDING_RECIPIENTS, topic = TOPIC_FILTERS),
-        expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS)
+        expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS),
+        expand(CONCEPT_EMBEDDING, dim = W2VDIMS),
+        expand(CONCEPT_EMBEDDING_2D, dim = W2VDIMS),
+        expand(CONCEPT_PROJECTION_DF, dim = W2VDIMS),
+        expand(CONCEPT_PROJECTION_PLOT, dim = W2VDIMS)
 
 rule fetch_leading_orgs:
     output: LEADING_ORGS
@@ -120,3 +133,31 @@ rule fetch_pubs_over_time:
     output: PUBS_OVER_TIME
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_pubs_over_time.py"
+
+rule embed_concepts:
+    input: rules.fetch_pub_concepts.output
+    params: lambda wc: wc.get("dim")
+    output: CONCEPT_EMBEDDING
+    conda: "envs/embed.yaml"
+    script: "scripts/embed_concepts.py"
+
+rule dimreduce_with_umap:
+    input: rules.embed_concepts.output
+    output: CONCEPT_EMBEDDING_2D
+    conda: "envs/embed.yaml"
+    script: "scripts/dimreduce_with_umap.py"
+
+rule build_projection_dataframe:
+    input:
+        rules.dimreduce_with_umap.output,
+        rules.fetch_concept_frequencies.output
+    output: CONCEPT_PROJECTION_DF
+    conda: "envs/r.yaml"
+    script: "scripts/build_projection_dataframe.R"
+
+rule plot_projection_dataframe:
+    input:
+        rules.build_projection_dataframe.output,
+    output: CONCEPT_PROJECTION_PLOT
+    conda: "envs/r.yaml"
+    script: "scripts/plot_projection_dataframe.R"

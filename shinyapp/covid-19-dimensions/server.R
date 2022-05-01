@@ -11,12 +11,13 @@ library(shiny)
 library(tidyverse)
 library(DT)
 library(ggwordcloud)
-
+library(plotly)
 
 source("org-table.R")
 source("author-table.R")
 source("pub-table.R")
 source("funder-table.R")
+source("concept-projection.R")
 
 generate_main_table <- function(table, selection = "single", scrollable = TRUE, columnDefs = list()) {
   DT::renderDataTable(table,
@@ -199,6 +200,12 @@ shinyServer(function(input, output) {
     output$funder.recipients.sectors = renderPlot({generate_sector_treemap(selId, topic)})
     output$funder.recipients.countries = renderPlot({generate_country_treemap(selId, topic)})
     
+  })
+  
+  
+  
+  output$concept.projection <- renderPlotly({
+    ggplotly(generate_concept_projection(), tooltip = "label")
   })
 
 })

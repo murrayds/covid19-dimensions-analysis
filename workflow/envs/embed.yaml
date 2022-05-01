@@ -1,0 +1,10 @@
+name: embed
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pandas
+  - gensim=3.8.3
+  - umap-learn=0.5.1
+  - python=3.7
+prefix: /Users/d.murray/opt/miniconda3/envs/embed

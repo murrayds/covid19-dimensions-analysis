@@ -25,12 +25,13 @@ bqsql = """
 SELECT * FROM (
   SELECT
     concept.concept,
+    pubs.year,
     COUNT(concept) as n,
   FROM `covid-19-dimensions-ai.data.publications` AS pubs,
   UNNEST(concepts) concept
   WHERE pubs.type = "article"
   {condition}
-  GROUP BY concept
+  GROUP BY concept, year
   ORDER BY n DESC
 ) WHERE n > 50
 """

@@ -1,0 +1,8 @@
+name: r
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - r-tidyverse
+  - r-dbscan
+prefix: /Users/d.murray/opt/miniconda3/envs/r
