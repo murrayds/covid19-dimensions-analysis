@@ -31,7 +31,7 @@ for sentence in df.concepts:
 # First, perform initial training on unshuffled vocabulary
 model = gensim.models.Word2Vec(
             tokens,
-            size = 100,
+            size = int(snakemake.params[0]),
             window = 10, # just use the entire sentence
             min_count = 3, # Remove tokens that don't appear enough
             workers = 4, # paralellize, use 4 workers
