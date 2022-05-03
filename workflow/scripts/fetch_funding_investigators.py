@@ -33,7 +33,8 @@ SELECT
 FROM `covid-19-dimensions-ai.data.grants` as grants,
 unnest(investigators) pi
 LEFT JOIN `covid-19-dimensions-ai.data.grid` as grid on grid.id = grants.funder_org
-where pi.first_name is not null and funding_amount is not null;
+where pi.first_name is not null and funding_amount is not null
+{condition};
 """
 
 # Setup the filtering condition, first the general COVID topic filter
@@ -43,10 +44,12 @@ where pi.first_name is not null and funding_amount is not null;
 #
 condition = covid_filter_bqsql
 
+
 # Then, if specified, add the extra vaccine filter
 if "covid-vaccine" in snakemake.output[0]:
     condition = condition + "\n" + vaccine_filter_bqsql
 
+condition = condition.replace("title.preferred", "grants.title")
 
 # Save results to a dataframe
 df = pandas_gbq.read_gbq(bqsql.format(condition = condition),
