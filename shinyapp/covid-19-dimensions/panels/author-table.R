@@ -5,16 +5,16 @@
 #
 
 #
-# 
+#
 #
 fields_levels <- c("Medical and Health Sciences", "Studies in Human Society", "Biological Sciences", "Mathematical Sciences", "Agricultural and Veterinary Sciences", "Psychology and Cognitive Sciences", "Information and Computing Sciences", "Other")
 
-fields_colors <- c("Medical and Health Sciences" = "#e7298a", 
-                   "Studies in Human Society" = "#7570b3", 
+fields_colors <- c("Medical and Health Sciences" = "#e7298a",
+                   "Studies in Human Society" = "#7570b3",
                    "Psychology and Cognitive Sciences" = "#e6ab02",
-                   "Biological Sciences" = "#d95f02", 
-                   "Mathematical Sciences" = "#66a61e", 
-                   "Agricultural and Veterinary Sciences" = "#1b9e77", 
+                   "Biological Sciences" = "#d95f02",
+                   "Mathematical Sciences" = "#66a61e",
+                   "Agricultural and Veterinary Sciences" = "#1b9e77",
                    "Information and Computing Sciences" = "#a6761d",
                    "Other" = "grey")
 
@@ -23,17 +23,17 @@ fields_colors <- c("Medical and Health Sciences" = "#e7298a",
 # DATA GETTERS
 #
 get_author_table <- function(topic, metric) {
-  return(read_delim(paste0("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_authors/leading_authors_covid-",
-                           topic, 
-                           "_", 
+  return(read_delim(paste0("../../data/bq-data/leading_authors/leading_authors_covid-",
+                           topic,
+                           "_",
                            metric,
-                           ".tsv"), 
+                           ".tsv"),
                     delim = "\t"))
 }
 
 get_concept_freq <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/concept_frequencies.tsv", delim = "\t") %>% 
-    group_by(concept) %>% 
+  read_delim("../../data/bq-data/concept_frequencies.tsv", delim = "\t") %>% 
+    group_by(concept) %>%
     summarize(n = sum(n)) %>%
     mutate(prop = n / sum(n)) %>%
     ungroup() %>%
@@ -58,7 +58,7 @@ get_selected_author_top_pubs <- function(selId, table) {
            Journal = journal_titles,
            Citations = citations_1) %>%
     arrange(desc(Citations))
-  
+
 }
 
 generate_author_table <- function(df) {
@@ -90,7 +90,7 @@ generate_author_table <- function(df) {
 
 
 get_author_keywords <- function(table, selId) {
-  table %>%  
+  table %>%
     filter(researcher_id == selId) %>%
     mutate(concepts = str_split(concepts, ";")) %>%
     select(concepts)%>%
@@ -124,7 +124,7 @@ get_field_treemap <- function(table, selId) {
     mutate(prop = n / sum(n)) %>%
     ggplot(aes(area = prop, fill = fields, label = str_wrap(fields, width = 15))) +
     geom_treemap(color = "black") +
-    geom_treemap_text(colour = "white", 
+    geom_treemap_text(colour = "white",
                       place = "centre",
                       grow = TRUE) +
     theme_void() +

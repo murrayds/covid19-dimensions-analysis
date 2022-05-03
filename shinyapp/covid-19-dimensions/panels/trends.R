@@ -5,11 +5,11 @@
 #
 
 
-trends_fields_colors <- c("Medical and Health Sciences" = "#e31a1c", 
-                          "Studies in Human Society" = "#1f78b4", 
-                          "Biological Sciences" = "#b2df8a", 
-                          "Mathematical Sciences" = "#33a02c", 
-                          "Agricultural and Veterinary Sciences" = "#fb9a99", 
+trends_fields_colors <- c("Medical and Health Sciences" = "#e31a1c",
+                          "Studies in Human Society" = "#1f78b4",
+                          "Biological Sciences" = "#b2df8a",
+                          "Mathematical Sciences" = "#33a02c",
+                          "Agricultural and Veterinary Sciences" = "#fb9a99",
                           "Chemical Sciences" = "#6a3d9a",
                           "Information and Computing Sciences" = "#fdbf6f",
                           "Engineering" = "#ff7f00",
@@ -18,17 +18,17 @@ trends_fields_colors <- c("Medical and Health Sciences" = "#e31a1c",
 # DATA GETTERS
 #
 get_country_table_all <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/temporal/pubs_over_time_covid-all.tsv", delim = "\t")
+  read_delim("../../data/bq-data/temporal/pubs_over_time_covid-all.tsv", delim = "\t")
 })
 
 get_country_table_vaccine <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/temporal/pubs_over_time_covid-vaccine.tsv", delim = "\t")
+  read_delim("../../data/bq-data/temporal/pubs_over_time_covid-vaccine.tsv", delim = "\t")
 })
 
 
 #
 # PLOT BUILDERS
-# 
+#
 generate_absolute_trends_plot <- function(table, country) {
   table %>%
     filter(country == "All" | grepl(country, countries, fixed = T)) %>%
@@ -41,7 +41,7 @@ generate_absolute_trends_plot <- function(table, country) {
     filter(published_date > as.Date("2020-03-01")) %>%
     mutate(
       published_date = paste(format(published_date, "%Y"),  # Convert dates to quarterly
-                             sprintf("%02i", (as.POSIXlt(published_date)$mon) %/% 3L + 1L), 
+                             sprintf("%02i", (as.POSIXlt(published_date)$mon) %/% 3L + 1L),
                              sep = "-")
     ) %>%
     group_by(published_date, fields) %>%
@@ -77,7 +77,7 @@ generate_relative_trends_plot <- function(table, country) {
     filter(published_date > as.Date("2020-03-01")) %>%
     mutate(
       published_date = paste(format(published_date, "%Y"),  # Convert dates to quarterly
-                             sprintf("%02i", (as.POSIXlt(published_date)$mon) %/% 3L + 1L), 
+                             sprintf("%02i", (as.POSIXlt(published_date)$mon) %/% 3L + 1L),
                              sep = "-")
     ) %>%
     group_by(published_date, fields) %>%
@@ -100,4 +100,3 @@ generate_relative_trends_plot <- function(table, country) {
     ) +
     ylab("% of total")
 }
-  
