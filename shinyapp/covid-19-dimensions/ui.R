@@ -160,7 +160,8 @@ shinyUI(
               "Landscape",
               mainPanel(
                 h4("Topical landscape of COVID-19 research"),
-                p("By drawing on advances in neural networks and machine learning, we can construct an ", strong(em("embedding")), " of the concepts extracted from COVID-19 publications. The embedding, created using ", em("word2vec"), " creates a vector representation of concepts, where the distance between concepts reflects their tendency to co-occur together on the same paper. The resulting vectors can then be projected into 2-dimensions using the technique UMAP, resulting in the figure below. Simple clustering using DBScan helps reveal the structure of the landscape of COVID-19 topics. The size of points corresponds to the number of papers published with that concpet."),
+                p("By drawing on advances in neural networks and machine learning, we can construct an ", strong(em("embedding")), " of the concepts extracted from COVID-19 publications. The embedding, created using ", em("word2vec"), " creates a vector representation of concepts, where the distance between concepts reflects their tendency to co-occur together on the same paper. The resulting vectors can then be projected into 2-dimensions using the technique UMAP, resulting in the figure below. Simple clustering using DBScan helps reveal the structure of the landscape of COVID-19 topics."),
+                p("The size of points corresponds to either the number of papers published with that concpet, or the average number of citations or altmetrics score of papers containing the concept."),
                 p("Exploring the concpet landscape below reveals major topical disatinctions in COVID-19 research, such as papers covering the biology of the virus to its social implications."),
                 radioButtons("landscape.metric", "Size metric:",
                              c("Publications" = "n",
