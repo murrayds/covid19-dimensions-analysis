@@ -16,7 +16,7 @@ createDoiLink <- function(doi, text) {
 # DATA GETTERS
 #
 get_pub_table <- function(topic, metric) {
-  return(read_delim(paste0("../../data/bq-data/leading_pubs/leading_pubs_covid-",
+  return(read_delim(paste0("data/bq-data/leading_pubs/leading_pubs_covid-",
                            topic,
                            "_",
                            metric,

@@ -8,27 +8,27 @@
 # DATA GETTERS
 #
 org.covid.all <- reactive({
-  read_delim("../../data/bq-data/leading_orgs/leading_orgs_covid-all.tsv",
+  read_delim("data/bq-data/leading_orgs/leading_orgs_covid-all.tsv",
              delim = "\t")
 })
 
 org.covid.vaccine <- reactive({
-  read_delim("../../data/bq-data/leading_orgs/leading_orgs_covid-vaccine.tsv",
+  read_delim("data/bq-data/leading_orgs/leading_orgs_covid-vaccine.tsv",
              delim = "\t")
 })
 
 org.top.authors <- reactive({
-  read_delim("../../data/bq-data/leading_orgs/org_top_authors.tsv",
+  read_delim("data/bq-data/leading_orgs/org_top_authors.tsv",
              delim = "\t")
 })
 
 org.top.funders <- reactive({
-  read_delim("../../data/bq-data/leading_orgs/org_top_funders.tsv",
+  read_delim("data/bq-data/leading_orgs/org_top_funders.tsv",
              delim = "\t")
 })
 
 org.top.pubs <- reactive({
-  read_delim("../../data/bq-data/leading_orgs/org_top_pubs.tsv",
+  read_delim("data/bq-data/leading_orgs/org_top_pubs.tsv",
              delim = "\t")
 })
 

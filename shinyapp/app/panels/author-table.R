@@ -23,7 +23,7 @@ fields_colors <- c("Medical and Health Sciences" = "#e7298a",
 # DATA GETTERS
 #
 get_author_table <- function(topic, metric) {
-  return(read_delim(paste0("../../data/bq-data/leading_authors/leading_authors_covid-",
+  return(read_delim(paste0("data/bq-data/leading_authors/leading_authors_covid-",
                            topic,
                            "_",
                            metric,
@@ -32,7 +32,7 @@ get_author_table <- function(topic, metric) {
 }
 
 get_concept_freq <- reactive({
-  read_delim("../../data/bq-data/concept_frequencies.tsv", delim = "\t") %>% 
+  read_delim("data/bq-data/concept_frequencies.tsv", delim = "\t") %>% 
     group_by(concept) %>%
     summarize(n = sum(n)) %>%
     mutate(prop = n / sum(n)) %>%

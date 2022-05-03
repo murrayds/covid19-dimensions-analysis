@@ -46,7 +46,7 @@ get_funder_table_agg <- function(topic) {
 }
 
 get_funder_table <- function(topic) {
-  read_delim(paste0("../../data/bq-data/funding_orgs/funding_orgs_covid-",
+  read_delim(paste0("data/bq-data/funding_orgs/funding_orgs_covid-",
                     topic,
                     ".tsv"),
              delim = "\t")
@@ -54,7 +54,7 @@ get_funder_table <- function(topic) {
 
 
 get_recipient_table <- function(topic) {
-  read_delim(paste0("../../data/bq-data/funding_orgs/funding_recipients_covid-",
+  read_delim(paste0("data/bq-data/funding_orgs/funding_recipients_covid-",
                     topic,
                     ".tsv"),
              delim = "\t")

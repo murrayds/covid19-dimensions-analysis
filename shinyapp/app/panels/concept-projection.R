@@ -8,7 +8,7 @@
 # DATA GETTERS
 #
 concept.projection.table <- reactive({
-  read_delim("../../data/derived/embedding/coords/concept_embedding_projection_df_50.tsv", delim = "\t")
+  read_delim("data/derived/embedding/coords/concept_embedding_projection_df_50.tsv", delim = "\t")
 })
 
 

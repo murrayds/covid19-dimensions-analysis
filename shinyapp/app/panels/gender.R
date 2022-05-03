@@ -8,11 +8,11 @@
 # DATA GETTERS
 #
 get_gender_table_all <- reactive({
-  read_delim("../../data/derived/gender/authors_with_gender_covid-all.tsv", delim = "\t")
+  read_delim("data/derived/gender/authors_with_gender_covid-all.tsv", delim = "\t")
 })
 
 get_gender_table_vaccine <- reactive({
-  read_delim("../../data/derived/gender/authors_with_gender_covid-vaccine.tsv", delim = "\t")
+  read_delim("data/derived/gender/authors_with_gender_covid-vaccine.tsv", delim = "\t")
 })
 
 

@@ -18,11 +18,11 @@ trends_fields_colors <- c("Medical and Health Sciences" = "#e31a1c",
 # DATA GETTERS
 #
 get_country_table_all <- reactive({
-  read_delim("../../data/bq-data/temporal/pubs_over_time_covid-all.tsv", delim = "\t")
+  read_delim("data/bq-data/temporal/pubs_over_time_covid-all.tsv", delim = "\t")
 })
 
 get_country_table_vaccine <- reactive({
-  read_delim("../../data/bq-data/temporal/pubs_over_time_covid-vaccine.tsv", delim = "\t")
+  read_delim("data/bq-data/temporal/pubs_over_time_covid-vaccine.tsv", delim = "\t")
 })
 
 
