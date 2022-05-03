@@ -214,9 +214,12 @@ shinyServer(function(input, output) {
   })
   
   
-  output$concept.projection <- renderPlotly({
-    ggplotly(generate_concept_projection(), tooltip = "label")
+  observeEvent(input$landscape.metric, {
+    output$concept.projection <- renderPlotly({
+      ggplotly(generate_concept_projection(input$landscape.metric), tooltip = c("label", "label2"))
+    })  
   })
+  
   
   
   observeEvent(trends.listener(), {
