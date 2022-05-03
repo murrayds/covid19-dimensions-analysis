@@ -25,7 +25,7 @@ shinyUI(
                  p("All analyses are based on the publicly-available",  a("database", href="https://www.dimensions.ai/covid19/"), " of COVID-19 publications published by Dimensions. This database consists of over 200 thousand publications relevant to COVID-19, of which over 18 thousand are related specifically to vaccines. A unique feature of Dimensions is its indexing of over 16 thousand grants
 distributed by 241 funding organizations, making it possible to capture both the outputs and inputs of scientific research. This is a uniquely powerful database for understanding the landscape of COVID-19 science."),
                  p("This dashboard was created by",  a("Dakota Murray", href = "https://www.dakotamurray.me"), " using Shiny, a dashboard development tool based in R. The code used to create this dashboard, as well as an automated workflow for sourcing all data that underpins it using Google BigQuery, can be found in", a("this GitHub repository", href = "https://github.com/murrayds/covid19-dimensions-analysis")),
-                 p("A thematic summary of findings generated from this dashboard can be found linked here."),
+                 p("A thematic summary of findings generated from this dashboard can be found",  a("linked here.", href = "https://raw.githubusercontent.com/murrayds/covid19-dimensions-analysis/main/papers/scenario1_report.pdf")),
                  width = 6
                ) # End mainPanel
              ), # End tabPanel
