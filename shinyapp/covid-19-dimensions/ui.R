@@ -221,7 +221,7 @@ shinyUI(
                               list(`Worldwide` = list("All"),
                                    `North America` = list("United States", "Canada"),
                                    `Europe` = list("Belgium", "Denmark", "France", "Italy",
-                                                   "Netherlands", "Poland", "Portugal",
+                                                   "Netherlands", "Portugal",
                                                    "Sweden", "Switzerland", "United Kingdom"),
                                    `Asia/Oceania` = list("Australia", "New Zealand", "China", "India", "Japan")
                               )
