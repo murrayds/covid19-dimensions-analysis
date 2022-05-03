@@ -8,17 +8,17 @@
 # DATA GETTERS
 #
 get_gender_table_all <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/derived/gender/authors_with_gender_covid-all.tsv", delim = "\t")
+  read_delim("data/derived/gender/authors_with_gender_covid-all.tsv", delim = "\t")
 })
 
 get_gender_table_vaccine <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/derived/gender/authors_with_gender_covid-vaccine.tsv", delim = "\t")
+  read_delim("data/derived/gender/authors_with_gender_covid-vaccine.tsv", delim = "\t")
 })
 
 
 #
 # PLOT BUILDERS
-# 
+#
 generate_gender_funding_plot <- function(table, selId) {
   table %>%
     filter(selId == "All" | country == selId) %>%
@@ -36,16 +36,16 @@ generate_gender_funding_plot <- function(table, selId) {
            amount_per = amount / n,
            total = sum(amount)) %>%
     pivot_longer(cols = c(n, prop, amount_per), names_to = "metric") %>%
-    mutate(metric = factor(metric, 
+    mutate(metric = factor(metric,
                            levels = c("n", "prop", "amount_per"),
                            labels = c("# Grants", "% Total Support", "$ Per Grant")
     ),
-    Gender = factor(Gender, 
+    Gender = factor(Gender,
                     levels = c("f", "m", "UNK"),
                     labels = c("Women", "Men", "Unknown"))
     ) %>%
     ggplot(aes(x = Gender, y = value, fill = Gender)) +
-    geom_col(color = "black") + 
+    geom_col(color = "black") +
     facet_wrap(~metric, scale = "free_y") +
     scale_fill_manual(values = c("darkorange", "dodgerblue4", "grey")) +
     theme_minimal() +

@@ -8,7 +8,7 @@
 # DATA GETTERS
 #
 concept.projection.table <- reactive({
-  read_delim("/Users/d.murray/Documents/covid19-dimensions-analysis/data/derived/embedding/coords/concept_embedding_projection_df_50.tsv", delim = "\t")
+  read_delim("data/derived/embedding/coords/concept_embedding_projection_df_50.tsv", delim = "\t")
 })
 
 
@@ -17,10 +17,10 @@ concept.projection.table <- reactive({
 # PLOT BUILDERS
 #
 generate_concept_projection <- function(metric) {
-  ggplot(concept.projection.table() %>% rename(Metric = metric) %>% mutate(Metric = round(Metric, 3)), 
-       aes(x = axis1, y = axis2, 
+  ggplot(concept.projection.table() %>% rename(Metric = metric) %>% mutate(Metric = round(Metric, 3)),
+       aes(x = axis1, y = axis2,
            label = concept, label2 = Metric,
-           fill = as.character(cls), 
+           fill = as.character(cls),
            size = Metric)
   ) +
   geom_point(shape = 21, color = "black", stroke = 0.1, alpha = 0.6) +

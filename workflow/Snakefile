@@ -57,7 +57,7 @@ CONCEPT_PROJECTION_DF = j(DERIVED, "embedding", "coords", "concept_embedding_pro
 CONCEPT_PROJECTION_PLOT = j(FIGURES, "embedding", "concept_embedding_projection_{dim}_plot.png")
 AUTHORS_WITH_GENDER = j(DERIVED, "gender", "authors_with_gender_{topic}.tsv")
 
-S2ORC_SENTENCES = j(BQ_HOME, "text", "matched_s2orc_sentences.tsv")
+S2ORC_DISAGREEMENT = j(BQ_HOME, "text", "s2orc_disagreement_counts.tsv")
 
 TOPIC_FILTERS = ["covid-all", "covid-vaccine"]
 METRICS = ["pubcount", "citations", "altmetrics"]
@@ -86,7 +86,8 @@ rule all:
         expand(CONCEPT_EMBEDDING_2D, dim = W2VDIMS),
         expand(CONCEPT_PROJECTION_DF, dim = W2VDIMS),
         expand(CONCEPT_PROJECTION_PLOT, dim = W2VDIMS),
-        expand(AUTHORS_WITH_GENDER, topic = TOPIC_FILTERS)
+        expand(AUTHORS_WITH_GENDER, topic = TOPIC_FILTERS),
+        S2ORC_DISAGREEMENT
         #S2ORC_SENTENCES
 
 rule fetch_leading_orgs:
@@ -180,9 +181,9 @@ rule plot_projection_dataframe:
     script: "scripts/plot_projection_dataframe.R"
 
 rule fetch_matched_s2orc_sentences:
-    output: S2ORC_SENTENCES
-    shell:
-        "bash scripts/fetch_s2orc_sentences.sh '{output}'"
+    output: S2ORC_DISAGREEMENT
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_disagreement_sentence_counts.py"
 
 rule assign_gender_to_authors:
     input:

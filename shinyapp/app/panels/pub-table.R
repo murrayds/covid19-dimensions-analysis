@@ -16,12 +16,12 @@ createDoiLink <- function(doi, text) {
 # DATA GETTERS
 #
 get_pub_table <- function(topic, metric) {
-  return(read_delim(paste0("/Users/d.murray/Documents/covid19-dimensions-analysis/data/bq-data/leading_pubs/leading_pubs_covid-",
-                           topic, 
-                           "_", 
+  return(read_delim(paste0("data/bq-data/leading_pubs/leading_pubs_covid-",
+                           topic,
+                           "_",
                            metric,
-                           ".tsv"), 
-                    delim = "\t")) 
+                           ".tsv"),
+                    delim = "\t"))
 }
 
 
@@ -40,6 +40,5 @@ generate_pub_table <- function(table) {
            Year = year,
            Citations = citations,
            Altmetrics = altmetrics)
-  
-}
 
+}

@@ -10,16 +10,15 @@
 library(shiny)
 library(tidyverse)
 library(DT)
-library(ggwordcloud)
 library(plotly)
 
-source("org-table.R")
-source("author-table.R")
-source("pub-table.R")
-source("funder-table.R")
-source("concept-projection.R")
-source("trends.R")
-source("gender.R")
+source("panels/org-table.R")
+source("panels/author-table.R")
+source("panels/pub-table.R")
+source("panels/funder-table.R")
+source("panels/concept-projection.R")
+source("panels/trends.R")
+source("panels/gender.R")
 
 generate_main_table <- function(table, selection = "single", scrollable = TRUE, columnDefs = list()) {
   DT::renderDataTable(table,
