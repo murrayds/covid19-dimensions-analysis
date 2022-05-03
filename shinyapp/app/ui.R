@@ -14,7 +14,21 @@ library(plotly)
 
 # Define UI for application that draws a histogram
 shinyUI(
-  navbarPage("COVID-19 Research", 
+  navbarPage("COVID-19 Research",
+             #
+             # About panel
+             #
+             tabPanel(
+               "About",
+               mainPanel(
+                 h4("A dashboard for exploring the landscape, leaders, trends, and inequities of global COVID-19 and vaccine research"),
+                 p("All analyses are based on the publicly-available",  a("database", href="https://www.dimensions.ai/covid19/"), " of COVID-19 publications published by Dimensions. This database consists of over 200 thousand publications relevant to COVID-19, of which over 18 thousand are related specifically to vaccines. A unique feature of Dimensions is its indexing of over 16 thousand grants
+distributed by 241 funding organizations, making it possible to capture both the outputs and inputs of scientific research. This is a uniquely powerful database for understanding the landscape of COVID-19 science."),
+                 p("This dashboard was created by",  a("Dakota Murray", href = "https://www.dakotamurray.me"), " using Shiny, a dashboard development tool based in R. The code used to create this dashboard, as well as an automated workflow for sourcing all data that underpins it using Google BigQuery, can be found in", a("this GitHub repository", href = "https://github.com/murrayds/covid19-dimensions-analysis")),
+                 p("A thematic summary of findings generated from this dashboard can be found linked here."),
+                 width = 6
+               ) # End mainPanel
+             ), # End tabPanel
              #
              # ORGANIZATION TABLE PANEL
              #
@@ -29,20 +43,20 @@ shinyUI(
                  column(7, align = "left",
                         fluidRow(column(tabsetPanel(
                           id = "org.tabSwitch",
-                          tabPanel("All COVID-19 Research", DT::dataTableOutput("org.covid.all.table")),
-                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("org.covid.vaccine.table"))
-                        ), 
+                          tabPanel("All COVID-19 Research", DT::dataTableOutput("org.covid.all.table") %>% withSpinner(color="darkgrey")),
+                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("org.covid.vaccine.table") %>% withSpinner(color="darkgrey"))
+                        ),
                         width = 12)
                         )
                  ),
                  column(5,
                         verticalLayout(
                           h4("Top authors"),
-                          fluidRow(column(align = "left", DT::dataTableOutput("org.top.authors"), width = 12)),
+                          fluidRow(column(align = "left", DT::dataTableOutput("org.top.authors") %>% withSpinner(color="darkgrey"), width = 12)),
                           h4("Top funders"),
-                          fluidRow(column(align = "left", DT::dataTableOutput("org.top.funders"), width = 12)),
+                          fluidRow(column(align = "left", DT::dataTableOutput("org.top.funders") %>% withSpinner(color="darkgrey"), width = 12)),
                           h4("Top publications"),
-                          fluidRow(column(align = "left", DT::dataTableOutput("org.top.pubs"), width = 12))
+                          fluidRow(column(align = "left", DT::dataTableOutput("org.top.pubs") %>% withSpinner(color="darkgrey"), width = 12))
                         )
                  ),
                  width = 12
@@ -66,27 +80,27 @@ shinyUI(
                 column(7, align = "left",
                        fluidRow(column(tabsetPanel(
                          id = "author.tabSwitch",
-                         tabPanel("All COVID-19 Research", DT::dataTableOutput("author.covid.all.table")),
-                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("author.covid.vaccine.table")),
-                        ), 
+                         tabPanel("All COVID-19 Research", DT::dataTableOutput("author.covid.all.table") %>% withSpinner(color="darkgrey")),
+                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("author.covid.vaccine.table") %>% withSpinner(color="darkgrey")),
+                        ),
                         width = 12)
                        )
                 ), # End column
                 column(5,
                        verticalLayout(
                          h4("Top Publications"),
-                         fluidRow(column(align = "left", 
-                                         DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="darkgrey"), 
+                         fluidRow(column(align = "left",
+                                         DT::dataTableOutput("author.top.pubs") %>% withSpinner(color="darkgrey"),
                                          width = 12),
                                   height = "50%") ,
                          fluidRow(
-                           column(align = "left", 
+                           column(align = "left",
                                   h4("Field of publications"),
-                                  plotOutput("author.fields") %>% withSpinner(color="darkgrey"), 
+                                  plotOutput("author.fields") %>% withSpinner(color="darkgrey"),
                                   width = 8),
-                           column(align = "left", 
+                           column(align = "left",
                                   h4("Keywords"),
-                                  DT::dataTableOutput("author.keywords") %>% withSpinner(color="darkgrey"), 
+                                  DT::dataTableOutput("author.keywords") %>% withSpinner(color="darkgrey"),
                                   width = 4),
                            height = "50%"
                            )
@@ -113,7 +127,7 @@ shinyUI(
                          id = "pub.tabSwitch",
                          tabPanel("All COVID-19 Research", DT::dataTableOutput("pub.covid.all.table")),
                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("pub.covid.vaccine.table"))
-                         ), 
+                         ),
                        width = 12)
                        )
                 ), # End column
@@ -134,7 +148,7 @@ shinyUI(
                          id = "funder.tabSwitch",
                          tabPanel("All COVID-19 Research", DT::dataTableOutput("funder.covid.all.table")),
                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("funder.covid.vaccine.table"))
-                       ), 
+                       ),
                        width = 12)
                        )
                 ), # End column
@@ -142,11 +156,11 @@ shinyUI(
                        verticalLayout(
                          h4("Top recipients"),
                          fluidRow(column(align = "left", DT::dataTableOutput("funder.recipients") %>% withSpinner(color="darkgrey"), width = 12)) ,
-                         fluidRow(column(align = "left", 
-                                         h4("Recipient sectors"), 
+                         fluidRow(column(align = "left",
+                                         h4("Recipient sectors"),
                                          plotOutput("funder.recipients.sectors") %>% withSpinner(color="darkgrey"), width = 6),
-                                  column(align = "left", 
-                                         h4("Recipient countries"), 
+                                  column(align = "left",
+                                         h4("Recipient countries"),
                                          plotOutput("funder.recipients.countries") %>% withSpinner(color="darkgrey"), width = 6))
                        ) # End verticalLayout
                 ), # End column
@@ -188,7 +202,7 @@ shinyUI(
                                          list(`Worldwide` = list("All"),
                                               `North America` = list("United States", "Canada", "Mexico"),
                                               `Europe` = list("Belgium", "Denmark", "France", "Germany","Italy",
-                                                              "Netherlands", "Poland", "Portugal", "Spain", 
+                                                              "Netherlands", "Poland", "Portugal", "Spain",
                                                               "Russia", "Sweden", "Switzerland", "United Kingdom"),
                                               `Asia/Oceania` = list("Australia", "New Zealand", "China", "India", "Indonesia", "Japan", "South Korea"),
                                               `South America` = list("Brazil", "Peru", "Argentina", "Chile"),
@@ -198,7 +212,7 @@ shinyUI(
                 mainPanel(
                   h4("Temporal changes in COVID-19 research"),
                   p("The rate and topical distribution of COVID-19 research has evovled over time and is different across countires. Using this dashboard, it is possible to expore how many publications a country produced across each quarter throughout the pandemic, as well as the distribution of publications across topic categories"),
-                  column(align = "left", 
+                  column(align = "left",
                          width = 12,
                          fluidRow(plotlyOutput("trends.country.absolute") %>% withSpinner(color="darkgrey"), width = 12),
                          fluidRow(plotlyOutput("trends.country.relative") %>% withSpinner(color="darkgrey"), width = 12)
@@ -229,11 +243,11 @@ shinyUI(
                   width = 2
                 ), # END sidebarPanel
                 mainPanel(
-                  h4("Funding support by discipline"),
+                  h4("Inequities in funding support for men and women by country"),
                   p("Diveristy in science is not only a matter of justice, but also empowers research with different persepctives and approaches. Historically, women have been excluded from scientific institutions. Despite recent progress, there remain pressing inequities in women's access to resources for science."),
                   p("This panel shows the distribution of fuding support betwee men and women by country, and between all COVID-19 and vaccine-specific research."),
-                  p("Gender is assigned based on the first name of the investigators associated with each grant indexed in ", strong(em("Dimensions")), " and all amounts are displayed in U.S. dollars."),
-                  column(align = "left", 
+                  p("Gender is assigned based on the first name of the investigators associated with each grant indexed in ", strong(em("Dimensions")), " and all amounts are displayed in U.S. dollars. Multiple countries have been excluded for lack of data."),
+                  column(align = "left",
                          width = 12,
                          fluidRow(plotOutput("gender.country.plot") %>% withSpinner(color="darkgrey"), width = 12)
                   ) # END column
