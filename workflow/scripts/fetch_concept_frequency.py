@@ -25,13 +25,14 @@ bqsql = """
 SELECT * FROM (
   SELECT
     concept.concept,
-    pubs.year,
+    AVG(pubs.metrics.times_cited) as avg_times_cited,
+    AVG(pubs.altmetrics.score) as avg_altmetrics,
     COUNT(concept) as n,
   FROM `covid-19-dimensions-ai.data.publications` AS pubs,
   UNNEST(concepts) concept
   WHERE pubs.type = "article"
   {condition}
-  GROUP BY concept, year
+  GROUP BY concept
   ORDER BY n DESC
 ) WHERE n > 50
 """

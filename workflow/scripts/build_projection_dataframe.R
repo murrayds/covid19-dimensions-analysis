@@ -18,8 +18,7 @@ set.seed(1234)
 coords <- read_delim(snakemake@input[[1]], delim = "\t")
 
 # Next, read in the frequencies of concepts across the Dimensions database
-freq <- read_delim(snakemake@input[[2]], delim = "\t") %>%
-  group_by(concept) %>% summarize(n = sum(n))
+freq <- read_delim(snakemake@input[[2]], delim = "\t")
 
 # Identify clusters of the data.
 #
@@ -32,6 +31,8 @@ coords$cls <- as.character(cls$cluster)
 coords.formatted <- coords %>%
   left_join(freq, by = c("concept")) %>%
   filter(n > 10) %>%
-  mutate(n = n / max(n, na.rm = T))
+  mutate(
+    n = n / max(n, na.rm = T)
+  )
 
 write_delim(coords.formatted, snakemake@output[[1]], delim = "\t")

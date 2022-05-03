@@ -18,6 +18,8 @@ source("author-table.R")
 source("pub-table.R")
 source("funder-table.R")
 source("concept-projection.R")
+source("trends.R")
+source("gender.R")
 
 generate_main_table <- function(table, selection = "single", scrollable = TRUE, columnDefs = list()) {
   DT::renderDataTable(table,
@@ -76,6 +78,14 @@ shinyServer(function(input, output) {
     list(input$funder.covid.all.table_rows_selected, input$funder.covid.vaccine.table_rows_selected, input$funder.tabSwitch)
   })
   
+  trends.listener <- reactive({
+    list(input$trends.topic, input$trends.country)
+  })
+  
+  gender.listener <- reactive({
+    list(input$gender.topic, input$gender.country)
+  })
+  
   
   #
   # Org-Table Outputs
@@ -95,7 +105,7 @@ shinyServer(function(input, output) {
       print(paste("Your selected row:", selId))
     } else {
       req(input$org.covid.vaccine.table_rows_selected)
-      selId <- covid.vaccine()[input$org.covid.vaccine.table_rows_selected,]$id
+      selId <- org.covid.vaccine()[input$org.covid.vaccine.table_rows_selected,]$id
       print(paste("Your selected row:", selId))
     }
     
@@ -204,8 +214,34 @@ shinyServer(function(input, output) {
   })
   
   
-  output$concept.projection <- renderPlotly({
-    ggplotly(generate_concept_projection(), tooltip = "label")
+  observeEvent(input$landscape.metric, {
+    output$concept.projection <- renderPlotly({
+      ggplotly(generate_concept_projection(input$landscape.metric), tooltip = c("label", "label2"))
+    })  
+  })
+  
+  
+  
+  observeEvent(trends.listener(), {
+    table <- NULL
+    if(input$trends.topic == "all") { table <- get_country_table_all() } else { table <- get_country_table_vaccine() }
+    
+    output$trends.country.absolute <- renderPlotly({
+      generate_absolute_trends_plot(table, input$trends.country)
+    })
+    
+    output$trends.country.relative <- renderPlotly({
+      generate_relative_trends_plot(table, input$trends.country)
+    })
+  })
+  
+  
+  observeEvent(gender.listener(), {
+    table <- NULL
+    if(input$trends.topic == "all") { table <- get_gender_table_all() } else { table <- get_gender_table_vaccine() }
+    print(input$gender.country)
+    
+    output$gender.country.plot <- renderPlot({generate_gender_funding_plot(table, input$gender.country)})
   })
 
 })

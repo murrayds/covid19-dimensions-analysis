@@ -26,6 +26,11 @@ DERIVED = j(DATA_HOME, "derived")
 FIGURES = j(DATA_HOME, "figures")
 
 ###############################################################################
+# MISC FILES
+###############################################################################
+GENDER_MATCHING = j(DATA_HOME, "additional", "gender_matching.csv")
+
+###############################################################################
 # BQ Data Files
 ###############################################################################
 LEADING_ORGS = j(BQ_HOME, "leading_orgs", "leading_orgs_{topic}.tsv")
@@ -42,6 +47,7 @@ CONCEPT_FREQ = j(BQ_HOME, "concept_frequencies.tsv")
 
 FUNDING_ORGS = j(BQ_HOME, "funding_orgs", "funding_orgs_{topic}.tsv")
 FUNDING_RECIPIENTS = j(BQ_HOME, "funding_orgs", "funding_recipients_{topic}.tsv")
+FUNDING_INVESTIGATORS = j(BQ_HOME, "funding_orgs", "funding_investigators_{topic}.tsv")
 
 PUBS_OVER_TIME = j(BQ_HOME, "temporal", "pubs_over_time_{topic}.tsv")
 
@@ -49,6 +55,9 @@ CONCEPT_EMBEDDING = j(DERIVED, "embedding", "concepts_embedding_{dim}.bin")
 CONCEPT_EMBEDDING_2D = j(DERIVED, "embedding", "concepts_embedding_projection_{dim}.tsv")
 CONCEPT_PROJECTION_DF = j(DERIVED, "embedding", "coords", "concept_embedding_projection_df_{dim}.tsv")
 CONCEPT_PROJECTION_PLOT = j(FIGURES, "embedding", "concept_embedding_projection_{dim}_plot.png")
+AUTHORS_WITH_GENDER = j(DERIVED, "gender", "authors_with_gender_{topic}.tsv")
+
+S2ORC_SENTENCES = j(BQ_HOME, "text", "matched_s2orc_sentences.tsv")
 
 TOPIC_FILTERS = ["covid-all", "covid-vaccine"]
 METRICS = ["pubcount", "citations", "altmetrics"]
@@ -71,11 +80,14 @@ rule all:
         CONCEPT_FREQ,
         expand(FUNDING_ORGS, topic = TOPIC_FILTERS),
         expand(FUNDING_RECIPIENTS, topic = TOPIC_FILTERS),
+        expand(FUNDING_INVESTIGATORS, topic = TOPIC_FILTERS),
         expand(PUBS_OVER_TIME, topic = TOPIC_FILTERS),
         expand(CONCEPT_EMBEDDING, dim = W2VDIMS),
         expand(CONCEPT_EMBEDDING_2D, dim = W2VDIMS),
         expand(CONCEPT_PROJECTION_DF, dim = W2VDIMS),
-        expand(CONCEPT_PROJECTION_PLOT, dim = W2VDIMS)
+        expand(CONCEPT_PROJECTION_PLOT, dim = W2VDIMS),
+        expand(AUTHORS_WITH_GENDER, topic = TOPIC_FILTERS)
+        #S2ORC_SENTENCES
 
 rule fetch_leading_orgs:
     output: LEADING_ORGS
@@ -129,6 +141,11 @@ rule fetch_funding_orgs_recipients:
     conda: "envs/bigquery.yaml"
     script: "scripts/fetch_funding_orgs_recipients.py"
 
+rule fetch_funding_investigators:
+    output: FUNDING_INVESTIGATORS
+    conda: "envs/bigquery.yaml"
+    script: "scripts/fetch_funding_investigators.py"
+
 rule fetch_pubs_over_time:
     output: PUBS_OVER_TIME
     conda: "envs/bigquery.yaml"
@@ -161,3 +178,16 @@ rule plot_projection_dataframe:
     output: CONCEPT_PROJECTION_PLOT
     conda: "envs/r.yaml"
     script: "scripts/plot_projection_dataframe.R"
+
+rule fetch_matched_s2orc_sentences:
+    output: S2ORC_SENTENCES
+    shell:
+        "bash scripts/fetch_s2orc_sentences.sh '{output}'"
+
+rule assign_gender_to_authors:
+    input:
+        rules.fetch_funding_investigators.output,
+        GENDER_MATCHING
+    conda: "envs/r.yaml"
+    output: AUTHORS_WITH_GENDER
+    script: "scripts/assign_gender_to_authors.R"

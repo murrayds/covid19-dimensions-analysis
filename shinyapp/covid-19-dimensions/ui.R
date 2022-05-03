@@ -30,9 +30,9 @@ shinyUI(
                         fluidRow(column(tabsetPanel(
                           id = "org.tabSwitch",
                           tabPanel("All COVID-19 Research", DT::dataTableOutput("org.covid.all.table")),
-                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("org.covid.vaccine.table")),
+                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("org.covid.vaccine.table"))
                         ), 
-                        width = 12),
+                        width = 12)
                         )
                  ),
                  column(5,
@@ -69,7 +69,7 @@ shinyUI(
                          tabPanel("All COVID-19 Research", DT::dataTableOutput("author.covid.all.table")),
                          tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("author.covid.vaccine.table")),
                         ), 
-                        width = 12),
+                        width = 12)
                        )
                 ), # End column
                 column(5,
@@ -89,7 +89,7 @@ shinyUI(
                                   DT::dataTableOutput("author.keywords") %>% withSpinner(color="darkgrey"), 
                                   width = 4),
                            height = "50%"
-                           ),
+                           )
                        )
                 ),
                 width = 12
@@ -112,9 +112,9 @@ shinyUI(
                        fluidRow(column(tabsetPanel(
                          id = "pub.tabSwitch",
                          tabPanel("All COVID-19 Research", DT::dataTableOutput("pub.covid.all.table")),
-                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("pub.covid.vaccine.table")),
-                       ), 
-                       width = 12),
+                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("pub.covid.vaccine.table"))
+                         ), 
+                       width = 12)
                        )
                 ), # End column
                 width = 12
@@ -133,9 +133,9 @@ shinyUI(
                        fluidRow(column(tabsetPanel(
                          id = "funder.tabSwitch",
                          tabPanel("All COVID-19 Research", DT::dataTableOutput("funder.covid.all.table")),
-                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("funder.covid.vaccine.table")),
+                         tabPanel("COVID-19 Vaccine Research", DT::dataTableOutput("funder.covid.vaccine.table"))
                        ), 
-                       width = 12),
+                       width = 12)
                        )
                 ), # End column
                 column(5,
@@ -147,7 +147,7 @@ shinyUI(
                                          plotOutput("funder.recipients.sectors") %>% withSpinner(color="darkgrey"), width = 6),
                                   column(align = "left", 
                                          h4("Recipient countries"), 
-                                         plotOutput("funder.recipients.countries") %>% withSpinner(color="darkgrey"), width = 6)),
+                                         plotOutput("funder.recipients.countries") %>% withSpinner(color="darkgrey"), width = 6))
                        ) # End verticalLayout
                 ), # End column
                 width = 12
@@ -160,8 +160,15 @@ shinyUI(
               "Landscape",
               mainPanel(
                 h4("Topical landscape of COVID-19 research"),
-                p("By drawing on advances in neural networks and machine learning, we can construct an ", strong(em("embedding")), " of the concepts extracted from COVID-19 publications. The embedding, created using ", em("word2vec"), " creates a vector representation of concepts, where the distance between concepts reflects their tendency to co-occur together on the same paper. The resulting vectors can then be projected into 2-dimensions using the technique UMAP, resulting in the figure below. Simple clustering using DBScan helps reveal the structure of the landscape of COVID-19 topics. The size of points corresponds to the number of papers published with that concpet."),
+                p("By drawing on advances in neural networks and machine learning, we can construct an ", strong(em("embedding")), " of the concepts extracted from COVID-19 publications. The embedding, created using ", em("word2vec"), " creates a vector representation of concepts, where the distance between concepts reflects their tendency to co-occur together on the same paper. The resulting vectors can then be projected into 2-dimensions using the technique UMAP, resulting in the figure below. Simple clustering using DBScan helps reveal the structure of the landscape of COVID-19 topics."),
+                p("The size of points corresponds to either the number of papers published with that concpet, or the average number of citations or altmetrics score of papers containing the concept."),
                 p("Exploring the concpet landscape below reveals major topical disatinctions in COVID-19 research, such as papers covering the biology of the virus to its social implications."),
+                radioButtons("landscape.metric", "Size metric:",
+                             c("Publications" = "n",
+                               "Citations" = "avg_times_cited",
+                               "Altmetrics" = "avg_altmetrics"
+                             ),
+                             inline = TRUE),
                 fluidRow(plotlyOutput("concept.projection", height = "700px") %>% withSpinner(color="darkgrey"), width = 12) ,
                 width = 12
               ) # End mainPanel
@@ -171,10 +178,67 @@ shinyUI(
             #
             tabPanel(
               "Trends",
-              mainPanel(
-                h4("Temporal changes in COVID-19 research"),
-                width = 12
-              ) # End mainPanel
+              sidebarLayout(
+                sidebarPanel(
+                          radioButtons("trends.topic", "Research topic:",
+                               c("All COVID-19 Research" = "all",
+                                 "COVID-19 Vaccine Research" = "vaccine")
+                          ),
+                          selectInput("trends.country", "Choose a country:",
+                                         list(`Worldwide` = list("All"),
+                                              `North America` = list("United States", "Canada", "Mexico"),
+                                              `Europe` = list("Belgium", "Denmark", "France", "Germany","Italy",
+                                                              "Netherlands", "Poland", "Portugal", "Spain", 
+                                                              "Russia", "Sweden", "Switzerland", "United Kingdom"),
+                                              `Asia/Oceania` = list("Australia", "New Zealand", "China", "India", "Indonesia", "Japan", "South Korea"),
+                                              `South America` = list("Brazil", "Peru", "Argentina", "Chile"),
+                                              `Africa` = list("Egypt", "Kenya", "Nigeria", "South Africa", "Zimbabwe"))
+                            ), width = 2
+                ), # END sidebarPanel
+                mainPanel(
+                  h4("Temporal changes in COVID-19 research"),
+                  p("The rate and topical distribution of COVID-19 research has evovled over time and is different across countires. Using this dashboard, it is possible to expore how many publications a country produced across each quarter throughout the pandemic, as well as the distribution of publications across topic categories"),
+                  column(align = "left", 
+                         width = 12,
+                         fluidRow(plotlyOutput("trends.country.absolute") %>% withSpinner(color="darkgrey"), width = 12),
+                         fluidRow(plotlyOutput("trends.country.relative") %>% withSpinner(color="darkgrey"), width = 12)
+                  ) # END column
+                )
+              ) # End sidebarLayout
             ), # End tabPanel
+            #
+            # TRENDS IN COVID-19 RESEARCH
+            #
+            tabPanel(
+              "Gender in funding",
+              sidebarLayout(
+                sidebarPanel(
+                  radioButtons("gender.topic", "Research topic:",
+                               c("All COVID-19 Research" = "all",
+                                 "COVID-19 Vaccine Research" = "vaccine")
+                  ),
+                  selectInput("gender.country", "Choose a country:",
+                              list(`Worldwide` = list("All"),
+                                   `North America` = list("United States", "Canada"),
+                                   `Europe` = list("Belgium", "Denmark", "France", "Italy",
+                                                   "Netherlands", "Portugal",
+                                                   "Sweden", "Switzerland", "United Kingdom"),
+                                   `Asia/Oceania` = list("Australia", "New Zealand", "China", "India", "Japan")
+                              )
+                  ), # END selectInput
+                  width = 2
+                ), # END sidebarPanel
+                mainPanel(
+                  h4("Funding support by discipline"),
+                  p("Diveristy in science is not only a matter of justice, but also empowers research with different persepctives and approaches. Historically, women have been excluded from scientific institutions. Despite recent progress, there remain pressing inequities in women's access to resources for science."),
+                  p("This panel shows the distribution of fuding support betwee men and women by country, and between all COVID-19 and vaccine-specific research."),
+                  p("Gender is assigned based on the first name of the investigators associated with each grant indexed in ", strong(em("Dimensions")), " and all amounts are displayed in U.S. dollars."),
+                  column(align = "left", 
+                         width = 12,
+                         fluidRow(plotOutput("gender.country.plot") %>% withSpinner(color="darkgrey"), width = 12)
+                  ) # END column
+                ) # END mainPanel
+            ) # End sidebarLayout
+        ) # END yabPanel
   ) # End navbarPage
 )
