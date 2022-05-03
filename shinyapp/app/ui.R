@@ -229,10 +229,10 @@ shinyUI(
                   width = 2
                 ), # END sidebarPanel
                 mainPanel(
-                  h4("Funding support by discipline"),
+                  h4("Inequities in funding support for men and women by country"),
                   p("Diveristy in science is not only a matter of justice, but also empowers research with different persepctives and approaches. Historically, women have been excluded from scientific institutions. Despite recent progress, there remain pressing inequities in women's access to resources for science."),
                   p("This panel shows the distribution of fuding support betwee men and women by country, and between all COVID-19 and vaccine-specific research."),
-                  p("Gender is assigned based on the first name of the investigators associated with each grant indexed in ", strong(em("Dimensions")), " and all amounts are displayed in U.S. dollars."),
+                  p("Gender is assigned based on the first name of the investigators associated with each grant indexed in ", strong(em("Dimensions")), " and all amounts are displayed in U.S. dollars. Multiple countries have been excluded for lack of data."),
                   column(align = "left",
                          width = 12,
                          fluidRow(plotOutput("gender.country.plot") %>% withSpinner(color="darkgrey"), width = 12)
