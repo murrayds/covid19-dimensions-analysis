@@ -19,6 +19,7 @@ source("panels/funder-table.R")
 source("panels/concept-projection.R")
 source("panels/trends.R")
 source("panels/gender.R")
+source("panels/uncertainty-table.R")
 
 generate_main_table <- function(table, selection = "single", scrollable = TRUE, columnDefs = list()) {
   DT::renderDataTable(table,
@@ -159,7 +160,7 @@ shinyServer(function(input, output) {
   
   
   #
-  # Author-Table Outputs
+  # Publication-Table Outputs
   #
   observeEvent(input$pub.metric, {
     output$pub.covid.all.table = generate_main_table(generate_pub_table(get_pub_table("all", input$pub.metric)), "none", FALSE)
@@ -242,5 +243,11 @@ shinyServer(function(input, output) {
     
     output$gender.country.plot <- renderPlot({generate_gender_funding_plot(table, input$gender.country)})
   })
-
+  
+  
+  #
+  # Uncertainty-Table Outputs
+  #
+  output$uncertainty.covid.all.table = generate_main_table(generate_uncertainty_table(get_uncertainty_table()))
+  output$uncertainty.plot = renderPlot({generate_disagreement_plot(get_intext_disagreement())})
 })
