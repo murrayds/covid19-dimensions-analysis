@@ -14,7 +14,7 @@ library(plotly)
 
 # Define UI for application that draws a histogram
 shinyUI(
-  navbarPage("COVID-19 Research",
+  navbarPage("Dimensions—COVID-19",
              #
              # About panel
              #
@@ -253,6 +253,26 @@ distributed by 241 funding organizations, making it possible to capture both the
                   ) # END column
                 ) # END mainPanel
             ) # End sidebarLayout
-        ) # END yabPanel
+        ), # END tabPanel
+        #
+        # UNCERTAINTY TABLE PANEL
+        #
+        tabPanel(
+          "Uncertainty",
+          mainPanel(
+            h4("Disagreements, corrections, and retractions in COVID-19 research"),
+            p('Uncertainty is uniquitious, normal, and even healthy for science. Yet in a pandemic where policy and praxis draw heavily on cutting-edge research, disagreements must be raised and resolved with more speed than usual. Knowing what disagreements and sources of uncertainty exist and what they are about can be useful for identifying which projects to fund, especially if a goal of funding is to promote actionable scientific consensus.'),
+            p("Here, published comments, corrections, and criticisms are identified from among all COVID-19 research, and arranged by the total citations they receive. Note that these are not citations to the original paper, but instead to the correction."),
+            p("Over 2,000 in-text disagreements are also matched between Dimensions and S2ORC—a database of structured scientific full-text data—based on DOI matching. In-text disagreements in these papers are identified based on key words, and used to quantify the rate of disagreement across fields."),
+            column(align = "left",
+                   fluidRow(DT::dataTableOutput("uncertainty.covid.all.table")),
+                   width = 8),
+            column(align = "left",
+                   fluidRow(plotOutput("uncertainty.plot") %>% withSpinner(color="darkgrey")),
+                   width = 4),
+            width = 12
+            ) # mainPanel
+            
+        ) # End tabPanel
   ) # End navbarPage
 )

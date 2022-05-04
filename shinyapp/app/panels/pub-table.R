@@ -31,7 +31,7 @@ get_pub_table <- function(topic, metric) {
 generate_pub_table <- function(table) {
   table %>%
     mutate(
-      pub_title = str_wrap(pub_title, width = 30),
+      pub_title = str_trunc(pub_title, width = 80, side = "right"),
       pub_title = createDoiLink(doi, pub_title)
     ) %>%
     select(pub_title, journal_title, year, citations, altmetrics) %>%
